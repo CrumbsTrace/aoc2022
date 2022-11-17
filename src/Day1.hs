@@ -1,13 +1,14 @@
 module Day1(run) where
 
-import Utils
+run :: String -> (Int, Int)
+run input = (r1, r2)
+    where 
+        numbers = parse input
+        r1 = countIncreases 1 numbers
+        r2 = countIncreases 3 numbers
 
-run :: IO (Int, Int)
-run = do 
-    numbers <- getNumbersFromFile "inputs/day1.txt"
-    let r1 = countIncreases 1 numbers
-    let r2 = countIncreases 3 numbers
-    return (r1, r2)
+parse :: String -> [Int]
+parse input = map (read::String->Int) $ lines input
 
 countIncreases ::  Int -> [Int] -> Int
 countIncreases offset list = length $ filter greaterThan offsetPairs

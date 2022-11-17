@@ -60,7 +60,6 @@ library
     -- Modules exported by the library.
     exposed-modules:  Utils
                     , Day1
-
     -- Modules included in this library but not exported.
     -- other-modules:
 
@@ -68,7 +67,7 @@ library
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.17.0.0
+    build-depends:    base ^>=4.17.0.0,
 
     -- Directories containing source files.
     hs-source-dirs:   src
@@ -102,3 +101,22 @@ test-suite aoc2022-test
     build-depends:
         base ^>=4.17.0.0,
         aoc2022,
+        strict  
+
+benchmark bench-days
+    default-language: GHC2021
+
+    build-depends: 
+        base ^>=4.17.0.0,
+        aoc2022,
+        criterion,
+        strict  
+    
+    ghc-options: "-with-rtsopts=-A32m"
+
+    hs-source-dirs: bench
+
+    main-is: Bench.hs
+
+    type: exitcode-stdio-1.0
+
