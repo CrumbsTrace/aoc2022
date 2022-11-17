@@ -68,6 +68,8 @@ library
 
     -- Other library packages from which modules are imported.
     build-depends:    base ^>=4.17.0.0,
+                      text,
+                      attoparsec
 
     -- Directories containing source files.
     hs-source-dirs:   src
@@ -101,7 +103,7 @@ test-suite aoc2022-test
     build-depends:
         base ^>=4.17.0.0,
         aoc2022,
-        strict  
+        text,
 
 benchmark bench-days
     default-language: GHC2021
@@ -110,7 +112,6 @@ benchmark bench-days
         base ^>=4.17.0.0,
         aoc2022,
         criterion,
-        strict  
     
     ghc-options: "-with-rtsopts=-A32m"
 

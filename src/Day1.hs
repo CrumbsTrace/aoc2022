@@ -1,17 +1,17 @@
 module Day1(run) where
 
-run :: String -> (Int, Int)
-run input = (r1, r2)
+import Utils
+import qualified Data.Text as T
+
+run :: T.Text -> (Int, Int)
+run input = (p1, p2)
     where 
-        numbers = parse input
-        r1 = countIncreases 1 numbers
-        r2 = countIncreases 3 numbers
-
-parse :: String -> [Int]
-parse input = map (read::String->Int) $ lines input
-
+        numbers = parseNumbers input
+        p1 = countIncreases 1 numbers
+        p2 = countIncreases 3 numbers
+            
 countIncreases ::  Int -> [Int] -> Int
-countIncreases offset list = length $ filter greaterThan offsetPairs
+countIncreases offset list = length . filter greaterThan $ offsetPairs
     where 
         offsetPairs = getOffsetPairs offset list
         greaterThan = \(x, y) -> y > x
