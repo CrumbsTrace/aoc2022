@@ -3,7 +3,7 @@
 module Day25(run) where
 
 import Utils
-import qualified Data.Text as T
+import qualified Data.ByteString as BS
 
-run :: T.Text -> (Int, Int)
+run :: BS.ByteString -> (Int, Int)
 run input = (0, 0)

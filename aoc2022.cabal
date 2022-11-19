@@ -94,7 +94,7 @@ library
 
     -- Other library packages from which modules are imported.
     build-depends:    base ^>=4.17.0.0,
-                      text,
+                      bytestring,
                       attoparsec
 
     -- Directories containing source files.
@@ -116,7 +116,7 @@ test-suite test
     build-depends:
         base ^>=4.17.0.0,
         aoc2022,
-        text,
+        bytestring,
         tasty,
         tasty-hunit,
         HUnit
@@ -128,9 +128,9 @@ benchmark bench-days
         base ^>=4.17.0.0,
         aoc2022,
         criterion,
-        text
+        bytestring
     
-    ghc-options: "-with-rtsopts=-A32m"
+    ghc-options: -O2
 
     hs-source-dirs: bench
 
