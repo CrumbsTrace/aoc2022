@@ -1,7 +1,6 @@
 import qualified Data.Text as T
-import qualified Day1_2021
+import qualified Days
 import Utils
-
 
 import Test.Tasty
 import Test.Tasty.HUnit
@@ -17,14 +16,13 @@ tests :: TestTree
 tests = testGroup "Tests" [unitTests]
 
 unitTests = testGroup "Unit tests"
-  [ testCase "Day 1" $ do runAndConfirm Day1_2021.run "inputs/day1.txt" (1154, 1127)
+  [ testCase "Day 1 2021" $ do runAndConfirm (Days.runDay "Day 1 2021" "inputs/Day_1_2021.txt") (1154, 1127)
   ]
 
-runAndConfirm :: (T.Text -> (Int, Int)) -> FilePath -> (Int, Int) -> Assertion
-runAndConfirm f p r = do
-    input <- readFromFile p
-    let result = f input
-    result @?= r 
+runAndConfirm :: IO (Integer, Integer) -> (Integer, Integer) -> Assertion
+runAndConfirm r e = do
+    result <- r
+    result @?= e 
 
 -- testParsing :: Assertion
 -- testParsing = 
