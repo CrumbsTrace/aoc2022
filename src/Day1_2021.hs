@@ -1,4 +1,4 @@
-module Day1(run) where
+module Day1_2021(run) where
 
 import Utils
 import qualified Data.Text as T

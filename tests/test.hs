@@ -1,5 +1,5 @@
 import qualified Data.Text as T
-import qualified Day1
+import qualified Day1_2021
 import Utils
 
 
@@ -17,7 +17,7 @@ tests :: TestTree
 tests = testGroup "Tests" [unitTests]
 
 unitTests = testGroup "Unit tests"
-  [ testCase "Day 1" $ do runAndConfirm Day1.run "inputs/day1.txt" (1154, 1127)
+  [ testCase "Day 1" $ do runAndConfirm Day1_2021.run "inputs/day1.txt" (1154, 1127)
   ]
 
 runAndConfirm :: (T.Text -> (Int, Int)) -> FilePath -> (Int, Int) -> Assertion
