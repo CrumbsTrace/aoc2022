@@ -37,7 +37,7 @@ library
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
 
-    build-depends:    base ^>=4.17.0.0,
+    build-depends:    base ^>=4.16.0.0,
                       bytestring,
                       attoparsec
 
@@ -55,7 +55,7 @@ test-suite test
         Test.hs
 
     build-depends:
-        base ^>=4.17.0.0,
+        base ^>=4.16.0.0,
         aoc2022,
         bytestring,
         tasty,
@@ -66,7 +66,7 @@ benchmark bench-days
     default-language: GHC2021
 
     build-depends: 
-        base ^>=4.17.0.0,
+        base ^>=4.16.0.0,
         aoc2022,
         criterion,
         bytestring
@@ -74,7 +74,6 @@ benchmark bench-days
     ghc-options: 
         -O2
         -optc-O3
-        -funfolding-use-threshold=16
 
     hs-source-dirs: bench
     main-is: Bench.hs
