@@ -5,9 +5,6 @@ import Test.Tasty
 import Test.Tasty.HUnit
 import Data.Either
 
-import Data.List
-import Data.Ord
-
 main :: IO ()
 main = defaultMain tests
 

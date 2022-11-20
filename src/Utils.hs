@@ -9,7 +9,7 @@ readFromFile :: FilePath -> IO BS.ByteString
 readFromFile = BS.readFile
 
 numberParser :: Parser [Int]
-numberParser = many (P.decimal <* P.skipSpace)
+numberParser = many $ P.decimal <* P.skipSpace
 
 parseNumbers :: BS.ByteString -> [Int]
 parseNumbers b = case P.parseOnly numberParser b of
