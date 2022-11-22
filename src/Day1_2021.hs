@@ -1,7 +1,7 @@
 module Day1_2021 (run) where
 
 import Data.ByteString qualified as BS
-import Utils
+import Utils ( parseNumbers )
 
 run :: BS.ByteString -> (Int, Int)
 run input = (p1, p2)

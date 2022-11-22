@@ -1,33 +1,33 @@
 module Days (runDay) where
 
 import Data.ByteString qualified as BS
-import Day1
-import Day10
-import Day11
-import Day12
-import Day13
-import Day14
-import Day15
-import Day16
-import Day17
-import Day18
-import Day19
-import Day1_2021
-import Day2
-import Day20
-import Day21
-import Day22
-import Day23
-import Day24
-import Day25
-import Day3
-import Day4
-import Day5
-import Day6
-import Day7
-import Day8
-import Day9
-import Utils
+import Day1 (run)
+import Day10 (run)
+import Day11 (run)
+import Day12 (run)
+import Day13 (run)
+import Day14 (run)
+import Day15 (run)
+import Day16 (run)
+import Day17 (run)
+import Day18 (run)
+import Day19 (run)
+import Day1_2021 (run)
+import Day2 (run)
+import Day20 (run)
+import Day21 (run)
+import Day22 (run)
+import Day23 (run)
+import Day24 (run)
+import Day25 (run)
+import Day3 (run)
+import Day4 (run)
+import Day5 (run)
+import Day6 (run)
+import Day7 (run)
+import Day8 (run)
+import Day9 (run)
+import Utils (readFromFile)
 
 runDay :: String -> FilePath -> IO (Integer, Integer)
 runDay s p = case s of

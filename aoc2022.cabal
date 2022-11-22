@@ -71,10 +71,6 @@ benchmark bench-days
         criterion,
         bytestring
     
-    ghc-options: 
-        -O2
-        -optc-O3
-
     hs-source-dirs: bench
     main-is: Bench.hs
     type: exitcode-stdio-1.0
