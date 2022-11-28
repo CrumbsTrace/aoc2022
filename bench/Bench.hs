@@ -3,7 +3,7 @@ import Days
 import Utils
 
 main = do
-  -- let days = [benchDay ("Day_" <> show i) | i <- [1..25]]
+  -- let days = [benchDay ("Day_" <> show i) | i <- [1 .. 1]]
   let days = [benchDay "Day_1_2021"]
   defaultMain
     [ bgroup "days" days
