@@ -13,4 +13,4 @@ run input = (p1, p2)
     p2 = sum $ take 3 sortedCalories
 
 parser :: Parser [[Int]]
-parser = (decimal `sepBy'` endOfLine) `sepBy'` endOfLine
+parser = (decimal `sepBy'` endOfLine) `sepBy'` (endOfLine <* endOfLine)
