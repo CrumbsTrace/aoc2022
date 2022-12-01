@@ -4,7 +4,6 @@ import Data.Attoparsec.ByteString.Char8 (Parser, char, decimal, sepBy')
 import Data.ByteString (ByteString)
 import Utils (runParser, sortDesc, bstring)
 
-
 run :: ByteString -> (Int, Int)
 run input = (p1, p2)
   where
