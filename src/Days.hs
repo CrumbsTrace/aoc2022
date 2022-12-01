@@ -31,34 +31,34 @@ import Utils (readFromFile)
 
 runDay :: String -> FilePath -> IO String
 runDay s p = case s of
-  "Day_1" -> runDayInt Day1.run p
-  "Day_2" -> runDayInt Day2.run p
-  "Day_3" -> runDayInt Day3.run p
-  "Day_4" -> runDayInt Day4.run p
-  "Day_5" -> runDayInt Day5.run p
-  "Day_6" -> runDayInt Day6.run p
-  "Day_7" -> runDayInt Day7.run p
-  "Day_8" -> runDayInt Day8.run p
-  "Day_9" -> runDayInt Day9.run p
-  "Day_10" -> runDayInt Day10.run p
-  "Day_11" -> runDayInt Day11.run p
-  "Day_12" -> runDayInt Day12.run p
-  "Day_13" -> runDayInt Day13.run p
-  "Day_14" -> runDayInt Day14.run p
-  "Day_15" -> runDayInt Day15.run p
-  "Day_16" -> runDayInt Day16.run p
-  "Day_17" -> runDayInt Day17.run p
-  "Day_18" -> runDayInt Day18.run p
-  "Day_19" -> runDayInt Day19.run p
-  "Day_20" -> runDayInt Day20.run p
-  "Day_21" -> runDayInt Day21.run p
-  "Day_22" -> runDayInt Day22.run p
-  "Day_23" -> runDayInt Day23.run p
-  "Day_24" -> runDayInt Day24.run p
-  "Day_25" -> runDayInt Day25.run p
-  "Day_1_2021" -> runDayInt Day1_2021.run p
+  "Day_1" -> runDayF Day1.run p
+  "Day_2" -> runDayF Day2.run p
+  "Day_3" -> runDayF Day3.run p
+  "Day_4" -> runDayF Day4.run p
+  "Day_5" -> runDayF Day5.run p
+  "Day_6" -> runDayF Day6.run p
+  "Day_7" -> runDayF Day7.run p
+  "Day_8" -> runDayF Day8.run p
+  "Day_9" -> runDayF Day9.run p
+  "Day_10" -> runDayF Day10.run p
+  "Day_11" -> runDayF Day11.run p
+  "Day_12" -> runDayF Day12.run p
+  "Day_13" -> runDayF Day13.run p
+  "Day_14" -> runDayF Day14.run p
+  "Day_15" -> runDayF Day15.run p
+  "Day_16" -> runDayF Day16.run p
+  "Day_17" -> runDayF Day17.run p
+  "Day_18" -> runDayF Day18.run p
+  "Day_19" -> runDayF Day19.run p
+  "Day_20" -> runDayF Day20.run p
+  "Day_21" -> runDayF Day21.run p
+  "Day_22" -> runDayF Day22.run p
+  "Day_23" -> runDayF Day23.run p
+  "Day_24" -> runDayF Day24.run p
+  "Day_25" -> runDayF Day25.run p
+  "Day_1_2021" -> runDayF Day1_2021.run p
   _ -> return "Error"
 
-runDayInt :: Show a => (BS.ByteString -> a) -> FilePath -> IO String
-runDayInt f p = show . f <$> readFromFile p
+runDayF :: Show a => (BS.ByteString -> a) -> FilePath -> IO String
+runDayF f p = show . f <$> readFromFile p
 
