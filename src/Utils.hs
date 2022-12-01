@@ -1,7 +1,8 @@
-module Utils (readFromFile, runParser, sortDesc) where
+module Utils (readFromFile, runParser, sortDesc, bstring) where
 
-import Data.Attoparsec.ByteString.Char8 (Parser, parseOnly)
+import Data.Attoparsec.ByteString.Char8 as P (Parser, parseOnly, string)
 import Data.ByteString qualified as BS
+import Data.ByteString.Char8 (pack)
 import Data.List
 import Data.Ord (Down (Down))
 
@@ -15,3 +16,6 @@ runParser p b = case parseOnly p b of
 
 sortDesc :: Ord a => [a] -> [a]
 sortDesc = sortOn Down
+
+bstring :: String -> Parser BS.ByteString
+bstring s = P.string (pack s)

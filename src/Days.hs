@@ -29,7 +29,7 @@ import Day8 (run)
 import Day9 (run)
 import Utils (readFromFile)
 
-runDay :: String -> FilePath -> IO (Integer, Integer)
+runDay :: String -> FilePath -> IO String
 runDay s p = case s of
   "Day_1" -> runDayInt Day1.run p
   "Day_2" -> runDayInt Day2.run p
@@ -57,10 +57,8 @@ runDay s p = case s of
   "Day_24" -> runDayInt Day24.run p
   "Day_25" -> runDayInt Day25.run p
   "Day_1_2021" -> runDayInt Day1_2021.run p
-  _ -> return (0, 0)
+  _ -> return "Error"
 
-runDayInt :: (BS.ByteString -> (Int, Int)) -> FilePath -> IO (Integer, Integer)
-runDayInt f p = intToInteger . f <$> readFromFile p
+runDayInt :: Show a => (BS.ByteString -> a) -> FilePath -> IO String
+runDayInt f p = show . f <$> readFromFile p
 
-intToInteger :: (Int, Int) -> (Integer, Integer)
-intToInteger (a, b) = (fromIntegral a, fromIntegral b)

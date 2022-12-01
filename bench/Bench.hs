@@ -5,9 +5,7 @@ import Utils
 main = do
   let days = [benchDay ("Day_" <> show i) | i <- [1 .. 1]]
   -- let days = [benchDay "Day_1_2021"]
-  defaultMain
-    [ bgroup "days" days
-    ]
+  defaultMain [ bgroup "days" days ]
 
 benchDay :: String -> Benchmark
 benchDay s = bench s $ nfIO $ Days.runDay s $ constructFileName s
