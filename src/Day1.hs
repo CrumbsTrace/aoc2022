@@ -1,9 +1,16 @@
-{-# OPTIONS_GHC -Wno-unused-matches #-}
-{-# OPTIONS_GHC -Wno-unused-imports #-}
-module Day1(run) where
+{-# OPTIONS_GHC -Wno-missing-signatures #-}
 
-import Utils
-import qualified Data.ByteString as BS
+module Day1 (run) where
 
-run :: BS.ByteString -> (Int, Int)
-run input = (0, 0)
+import Data.Attoparsec.ByteString.Char8 (Parser, decimal, endOfLine, sepBy')
+import Utils (runParser, sortDesc)
+
+run input = (p1, p2)
+  where
+    parsedInput = runParser parser input
+    sortedCalories = sortDesc $ map sum parsedInput
+    p1 = head sortedCalories
+    p2 = sum $ take 3 sortedCalories
+
+parser :: Parser [[Int]]
+parser = (decimal `sepBy'` endOfLine) `sepBy'` endOfLine

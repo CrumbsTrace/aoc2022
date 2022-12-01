@@ -13,7 +13,8 @@ tests = testGroup "Tests" [unitTests]
 unitTests =
   testGroup
     "Unit tests"
-    [ testCase "Day 1 2021" $ do runAndConfirm (runHelper "Day_1_2021") (1154, 1127)
+    [ testCase "Day 1 2021" $ do runAndConfirm (runHelper "Day_1_2021") (1154, 1127),
+      testCase "Day 1" $ do runAndConfirm (runHelper "Day_1") (68467, 203420)
     ]
 
 runAndConfirm :: IO (Integer, Integer) -> (Integer, Integer) -> Assertion
