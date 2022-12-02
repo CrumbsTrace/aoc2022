@@ -25,9 +25,10 @@ chooseMove (c1, c2)
   | otherwise = (c1, makeValid $ c1 - 1) -- Loss
 
 makeValid :: Int -> Int
-makeValid   c = if c < 1 then c + 3 else c
+makeValid c = if c < 1 then c + 3 else c
 
 -- Turn into integer pairs. A and X are converted 1, B, Y to 2 and C, Z to 3
 parser :: Parser [(Int, Int)]
 parser = (convert <$> anyChar <* space <*> anyChar) `sepBy'` char '\n'
-  where convert c1 c2 = (ord c1 - ord '@', ord c2 - ord 'W')
+  where 
+    convert c1 c2 = (ord c1 - ord '@', ord c2 - ord 'W')
