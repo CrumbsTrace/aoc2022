@@ -16,4 +16,3 @@ parser =  parseLinesAndSum `sepBy'` doubleLineEnd
   where
     doubleLineEnd = char '\n' <* char '\n'
     parseLinesAndSum = sum <$> decimal `sepBy'` char '\n'
-
