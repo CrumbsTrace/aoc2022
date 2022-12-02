@@ -13,22 +13,21 @@ run input = (p1, p2)
     p2 = sum $ map (getPoints . chooseMove) parsedInput
 
 getPoints :: (Int, Int) -> Int
-getPoints (x, y) 
-  | x == y = y + 3 --Draw
-  | x - y `elem` [-1, 2] = y + 6 --Win
-  | otherwise = y -- Loss
+getPoints (c1, c2) 
+  | c1 == c2               = c2 + 3 --Draw
+  | c1 - c2 `elem` [-1, 2] = c2 + 6 --Win
+  | otherwise              = c2 -- Loss
 
 chooseMove :: (Int, Int) -> (Int, Int)
-chooseMove (x, y)
-  | y == 2 = (x, x) -- Draw
-  | y == 3 = (x, makeValid $ x - 2) -- Win
-  | otherwise = (x, makeValid $ x - 1) -- Loss
+chooseMove (c1, c2)
+  | c2 == 2   = (c1, c1) -- Draw
+  | c2 == 3   = (c1, makeValid $ c1 - 2) -- Win
+  | otherwise = (c1, makeValid $ c1 - 1) -- Loss
 
 makeValid :: Int -> Int
-makeValid x = if x < 1 then x + 3 else x
+makeValid   c = if c < 1 then c + 3 else c
 
 -- Turn into integer pairs. A and X are converted 1, B, Y to 2 and C, Z to 3
 parser :: Parser [(Int, Int)]
 parser = (convert <$> anyChar <* space <*> anyChar) `sepBy'` char '\n'
-  where 
-    convert x y = (ord x - ord '@', ord y - ord 'W')
+  where convert c1 c2 = (ord c1 - ord '@', ord c2 - ord 'W')
