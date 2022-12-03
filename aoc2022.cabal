@@ -44,9 +44,9 @@ library
         Day1_2021
 
     default-language: GHC2021
-    ghc-options:      -Wall -O2 -optc-O3
+    ghc-options:      -Wall -O2 -optc-O3 
     build-depends:
-        base ^>=4.17.0.0,
+        base >=4.16.0.0,
         bytestring,
         attoparsec,
         containers
@@ -57,7 +57,7 @@ test-suite test
     hs-source-dirs:   tests
     default-language: GHC2021
     build-depends:
-        base ^>=4.17.0.0,
+        base >=4.16.0.0,
         aoc2022,
         bytestring,
         tasty,
@@ -70,7 +70,7 @@ benchmark bench-days
     hs-source-dirs:   bench
     default-language: GHC2021
     build-depends:
-        base ^>=4.17.0.0,
+        base >=4.16.0.0,
         aoc2022,
         criterion,
         bytestring
