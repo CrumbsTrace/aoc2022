@@ -9,8 +9,8 @@ run :: ByteString -> (Int, Int)
 run input = (p1, p2) 
   where
     parsedInput = runParser parser input
-    p1 = (sum . map findCommonPair) $ map splitInHalf parsedInput
-    p2 = (sum . findCommonTrios) parsedInput
+    p1 = sum $ map (findCommonPair . splitInHalf) parsedInput
+    p2 = sum $ findCommonTrios parsedInput
 
 findCommonPair :: ([Int], [Int]) -> Int
 findCommonPair (l1, l2) = head [x | x <- l1, x `elem` l2]
