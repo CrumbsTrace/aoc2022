@@ -1,6 +1,7 @@
 module Day1_2021 (run) where
 
-import Data.Attoparsec.ByteString.Char8 (Parser, decimal, sepBy', skipSpace)
+import Data.Attoparsec.ByteString.Char8 (Parser, decimal, many')
+import Data.Attoparsec.ByteString.Char8 qualified as P (take)
 import Data.ByteString qualified as BS
 import Utils (runParser)
 
@@ -18,4 +19,4 @@ pairWithOffset :: Int -> [b] -> [(b, b)]
 pairWithOffset o xs = zip xs $ drop o xs
 
 numberParser :: Parser [Int]
-numberParser = decimal `sepBy'` skipSpace
+numberParser = many' $ decimal <* P.take 1
