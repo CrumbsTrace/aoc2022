@@ -16,7 +16,8 @@ countIncreases :: Int -> [Int] -> Int
 countIncreases offset list = length [pair | pair@(x, y) <- pairWithOffset offset list, y > x]
 
 pairWithOffset :: Int -> [b] -> [(b, b)]
-pairWithOffset o xs = zip xs $ drop o xs
+pairWithOffset o = zip <*> drop o
 
 numberParser :: Parser [Int]
 numberParser = many' $ decimal <* P.take 1
+

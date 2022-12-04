@@ -16,7 +16,8 @@ unitTests =
     [ testCase "Day 1 2021" $ do runAndConfirm (runHelper "Day_1_2021") (1154,1127),
       testCase "Day 1" $ do runAndConfirm (runHelper "Day_1") (68467,203420),
       testCase "Day 2" $ do runAndConfirm (runHelper "Day_2") (11906, 11186),
-      testCase "Day 3" $ do runAndConfirm (runHelper "Day_3") (7785, 2633)
+      testCase "Day 3" $ do runAndConfirm (runHelper "Day_3") (7785, 2633),
+      testCase "Day 4" $ do runAndConfirm (runHelper "Day_4") (475, 825)
     ]
 
 runAndConfirm :: Show a => IO String -> a -> Assertion

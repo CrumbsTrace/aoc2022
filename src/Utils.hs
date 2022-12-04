@@ -1,4 +1,4 @@
-module Utils (readFromFile, runParser, sortDesc, splitInHalf) where
+module Utils (readFromFile, runParser, sortDesc, splitInHalf, inBounds) where
 
 import Data.Attoparsec.ByteString.Char8 as P (Parser, parseOnly)
 import Data.ByteString qualified as BS
@@ -18,3 +18,7 @@ sortDesc = sortOn Down
 
 splitInHalf :: [Int] -> ([Int], [Int])
 splitInHalf s = splitAt (length s `div` 2) s
+
+inBounds :: Int -> (Int, Int) -> Bool
+inBounds c (b1, b2) = b1 <= c && b2 >= c
+
