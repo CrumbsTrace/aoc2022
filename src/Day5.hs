@@ -46,9 +46,8 @@ instructionP = (,,) <$> (string "move " *> decimal)
 
 stackLineP :: Parser [Char]
 stackLineP = (crateP `sepBy'` char ' ') <* char '\n'
-
-crateP :: Parser Char
-crateP = P.take 1 *> anyChar <* P.take 1
+  where 
+    crateP = P.take 1 *> anyChar <* P.take 1
 
 convertToCargo :: [[Char]] -> Cargo
 convertToCargo stacks = (listToMap1 . removeSpaces) $ transpose stacks
