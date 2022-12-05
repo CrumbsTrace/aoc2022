@@ -1,13 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Day5(run) where
 
-import Utils (runParser, listToMap1)
-import Data.Attoparsec.ByteString.Char8 (Parser, string, decimal, many', anyChar, skipWhile, sepBy', char)
-import Data.Attoparsec.ByteString.Char8 qualified as P (take)
+import Utils (runParser, listToMap1, skipLine)
+import Data.Attoparsec.ByteString.Char8 (Parser, string, decimal, many', anyChar, sepBy', char)
+import qualified Data.Attoparsec.ByteString.Char8 as P (take)
 import Data.ByteString (ByteString)
 import Data.List (transpose)
 import Data.Map.Strict qualified as Map
-import Data.Map.Strict ((!))
 
 type Cargo = Map.Map Int [Char]
 type Instruction = (Int, Int, Int)
@@ -23,38 +22,27 @@ rearrange :: Bool -> Cargo -> [Instruction] -> Cargo
 rearrange atOnce = foldl (moveCrates atOnce)
 
 moveCrates :: Bool -> Cargo -> Instruction -> Cargo
-moveCrates atOnce cargo instruction@(n, x, _) = updateCargo toMove instruction cargo
-  where
-    toMove = grabCrates n x cargo atOnce
-
-updateCargo :: [Char] -> Instruction -> Cargo -> Cargo
-updateCargo toMove (n,x,y) cargo = (addToStack . removeFromStack) cargo
-  where 
+moveCrates atOnce cargo (n, x, y) = let
+    toMove = if atOnce
+             then take n $ cargo Map.! x
+             else (reverse . take n) $ cargo Map.! x
+    removeFromStack = Map.adjust (drop n) x
     addToStack = Map.adjust (toMove ++) y
-    removeFromStack = Map.adjust (drop n) x 
-
-grabCrates :: Int -> Int -> Cargo -> Bool -> [Char]
-grabCrates n index cargo atOnce
-  | atOnce = take n $ cargo!index
-  | otherwise = (reverse . take n) $ cargo!index
+  in
+    (addToStack . removeFromStack) cargo
 
 topCrates :: Cargo -> String
 topCrates cargo = map head $ Map.elems cargo
 
 parser :: Parser (Cargo, [Instruction])
-parser = do 
-  cargo <- convertToCargo <$> many' stackLineP
-  _ <- skipWhile ('m'/=)
-  instructions <- many' instructionP
-  pure (cargo, instructions)
+parser = (,) <$> (convertToCargo <$> many' stackLineP) 
+             <*> (skipLine *> many' instructionP)
 
 instructionP :: Parser Instruction
-instructionP = do 
-  x <- string "move " *> decimal
-  y <- string " from " *> decimal
-  z <- string " to " *> decimal
-  _ <- P.take 1
-  pure (x, y, z)
+instructionP = (,,) <$> (string "move " *> decimal)
+                    <*> (string " from " *> decimal)
+                    <*> (string " to " *> decimal)
+                    <* P.take 1
 
 stackLineP :: Parser [Char]
 stackLineP = (crateP `sepBy'` char ' ') <* char '\n'

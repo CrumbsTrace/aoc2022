@@ -1,6 +1,13 @@
-module Utils (readFromFile, runParser, sortDesc, splitInHalf, inBounds, listToMap1) where
+module Utils (
+  readFromFile, 
+  runParser, 
+  sortDesc, 
+  splitInHalf, 
+  inBounds, 
+  listToMap1, 
+  skipLine) where
 
-import Data.Attoparsec.ByteString.Char8 as P (Parser, parseOnly)
+import Data.Attoparsec.ByteString.Char8 as P 
 import Data.ByteString qualified as BS
 import Data.List ( sortOn )
 import Data.Ord (Down (Down))
@@ -29,3 +36,6 @@ listToMap1 = listToMapHelper Map.empty 1
 listToMapHelper :: Map.Map Int b  -> Int -> [b] -> Map.Map Int b
 listToMapHelper stacks _ [] = stacks
 listToMapHelper stacks i (x:xs) = listToMapHelper (Map.insert i x stacks) (i + 1) xs
+
+skipLine :: Parser ()
+skipLine = skipWhile ('\n'/=) <* char '\n'
