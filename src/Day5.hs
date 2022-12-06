@@ -19,7 +19,7 @@ run input = (p1, p2)
     p2 = topCrates $ rearrange True cargo instructions
 
 rearrange :: Bool -> Cargo -> [Instruction] -> Cargo
-rearrange atOnce = foldl (moveCrates atOnce)
+rearrange = foldl . moveCrates
 
 moveCrates :: Bool -> Cargo -> Instruction -> Cargo
 moveCrates atOnce cargo (n, x, y) = let

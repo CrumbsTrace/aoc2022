@@ -1,9 +1,12 @@
-{-# OPTIONS_GHC -Wno-unused-matches #-}
-{-# OPTIONS_GHC -Wno-unused-imports #-}
 module Day6(run) where
 
-import Utils
-import qualified Data.ByteString as BS
+import Data.List (nub)
+import qualified Data.ByteString.Char8 as BS
 
 run :: BS.ByteString -> (Int, Int)
-run input = (0, 0)
+run input = (findStart (BS.unpack input) 4 0, findStart (BS.unpack input) 14 0)
+  where
+    findStart s n offset 
+      | n == (length $ nub $ take n s) = n + offset
+      | otherwise = findStart (drop 1 s) n (offset + 1)
+
