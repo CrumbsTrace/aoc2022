@@ -5,20 +5,22 @@ module Utils (
   splitInHalf, 
   inBounds, 
   listToMap1, 
-  skipLine) where
+  skipLine,
+  parseLine) where
 
 import Data.Attoparsec.ByteString.Char8 as P 
 import Data.ByteString qualified as BS
 import Data.List ( sortOn )
 import Data.Ord (Down (Down))
 import Data.Map.Strict qualified as Map
+import Debug.Trace
 
 readFromFile :: FilePath -> IO BS.ByteString
 readFromFile = BS.readFile
 
 runParser :: Parser a -> BS.ByteString -> a
 runParser p b = case parseOnly p b of
-  Left _ -> error "rip"
+  Left a -> traceShow a error "rip"
   Right s -> s
 
 sortDesc :: Ord a => [a] -> [a]
@@ -39,3 +41,7 @@ listToMapHelper stacks i (x:xs) = listToMapHelper (Map.insert i x stacks) (i + 1
 
 skipLine :: Parser ()
 skipLine = skipWhile ('\n'/=) <* char '\n'
+
+parseLine :: Parser [Char]
+parseLine = many' (notChar '\n') <* char '\n'
+
