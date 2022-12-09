@@ -13,8 +13,8 @@ tests = testGroup "Tests" [unitTests]
 unitTests =
   testGroup
     "Unit tests"
-    [ testCase "Day 1 2021" $ do runAndConfirm (runHelper "Day_1_2021") (1154,1127),
-      testCase "Day 1" $ do runAndConfirm (runHelper "Day_1") (68467,203420),
+    [ testCase "Day 1 2021" $ do runAndConfirm (runHelper "Day_1_2021") (1154, 1127),
+      testCase "Day 1" $ do runAndConfirm (runHelper "Day_1") (68467, 203420),
       testCase "Day 2" $ do runAndConfirm (runHelper "Day_2") (11906, 11186),
       testCase "Day 3" $ do runAndConfirm (runHelper "Day_3") (7785, 2633),
       testCase "Day 4" $ do runAndConfirm (runHelper "Day_4") (475, 825),
@@ -22,7 +22,7 @@ unitTests =
       testCase "Day 6" $ do runAndConfirm (runHelper "Day_6") (1804, 2508),
       testCase "Day 7" $ do runAndConfirm (runHelper "Day_7") (1334506, 7421137),
       testCase "Day 8" $ do runAndConfirm (runHelper "Day_8") (1816, 383520),
-      testCase "Day 9" $ do runAndConfirm (runHelper "Day_9") (1816, 383520)
+      testCase "Day 9" $ do runAndConfirm (runHelper "Day_9") (6367, 2536)
     ]
 
 runAndConfirm :: Show a => IO String -> a -> Assertion
