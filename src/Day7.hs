@@ -1,25 +1,28 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Day7(run) where
 
-import Utils ( runParser, skipLine, parseLine )
-import Data.Attoparsec.ByteString.Char8 (Parser, string, decimal, many', char, eitherP)
+module Day7 (run) where
+
+import Control.Applicative (Alternative ((<|>)))
+import Data.Attoparsec.ByteString.Char8 (Parser, char, decimal, eitherP, many', string)
 import Data.ByteString (ByteString)
+import Data.Either (rights)
 import Data.List (isPrefixOf)
-import Control.Applicative (Alternative((<|>)))
-import Data.Either ( rights )
+import Utils (parseLine, runParser, skipLine)
 
 type Size = Int
+
 type Name = String
+
 data FileTree = File Size Name | Directory Size Name [FileTree] deriving (Show, Eq)
 
 run :: ByteString -> (Int, Int)
-run input = (p1, p2) 
+run input = (p1, p2)
   where
     tree = runParser parser input
     sizes = getSizes tree
     p1 = sum $ filter (<= 100_000) sizes
-    capacityToFreeUp =  30_000_000 - (70_000_000 - head sizes)
-    p2 = minimum $ filter (>=capacityToFreeUp) sizes
+    capacityToFreeUp = 30_000_000 - (70_000_000 - head sizes)
+    p2 = minimum $ filter (>= capacityToFreeUp) sizes
 
 getSizes :: FileTree -> [Int]
 getSizes (File _ _) = [0]

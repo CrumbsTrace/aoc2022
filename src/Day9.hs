@@ -1,12 +1,8 @@
-{-# OPTIONS_GHC -Wno-unused-imports #-}
-{-# OPTIONS_GHC -Wno-unused-matches #-}
-
 module Day9 (run) where
 
-import Data.Attoparsec.ByteString.Char8 (Parser, anyChar, char, decimal, many', notChar, string)
+import Data.Attoparsec.ByteString.Char8 (Parser, anyChar, char, decimal, many')
 import Data.ByteString (ByteString)
 import Data.Set qualified as Set
-import Debug.Trace
 import Utils
 
 type Positions = ((Int, Int), [(Int, Int)])
@@ -69,4 +65,4 @@ parser = many' (parse <$> anyChar <* char ' ' <*> decimal <* char '\n')
     parse 'U' n = (0, n)
     parse 'D' n = (0, -n)
     parse 'L' n = (-n, 0)
-    parse r n = (n, 0)
+    parse _ n = (n, 0)
