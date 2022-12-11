@@ -77,7 +77,7 @@ parseOperation = do
 createOperation :: Char -> Either Integer ByteString -> (Integer -> Integer)
 createOperation '*' (Left n) = (* n)
 createOperation '+' (Left n) = (+ n)
-createOperation '*' (Right _) = \v -> v * v
+createOperation '*' (Right _) = (^ (2 :: Integer))
 createOperation _ _ = \n -> n + n
 
 parseInspect :: Parser (Integer, Map.Map Int Monkey -> Integer -> Map.Map Int Monkey)
