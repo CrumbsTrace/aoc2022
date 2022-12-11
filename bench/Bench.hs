@@ -3,8 +3,8 @@ import Days
 import Utils
 
 main = do
-  let days = [benchDay ("Day_" <> show i) | i <- [1 .. 10]]
-  -- let days = [benchDay "Day_10"]
+  -- let days = [benchDay ("Day_" <> show i) | i <- [1 .. 10]]
+  let days = [benchDay "Day_11"]
   defaultMain [bgroup "days" days]
 
 benchDay :: String -> Benchmark
