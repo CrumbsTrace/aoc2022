@@ -3,10 +3,9 @@ module Day12 (run) where
 import Data.Attoparsec.ByteString.Char8 as P (Parser, many')
 import Data.ByteString (ByteString)
 import Data.Char (ord)
-import Data.Map.Strict ((!))
 import Data.Map.Strict qualified as Map
 import Data.Set qualified as Set
-import Utils (gridToMap, parseLine, runParser, neighbors)
+import Utils (gridToMap, neighbors, parseLine, runParser)
 
 type Point = (Int, Int)
 
@@ -16,32 +15,34 @@ run :: ByteString -> (Int, Int)
 run input = (p1, p2)
   where
     grid = runParser parser input
-    p1 = bfs' grid $ Map.keys $ Map.filter (== 'S') grid
-    p2 = bfs' grid $ Map.keys $ Map.filter (== 'a') grid
+    end = head . Map.keys $ Map.filter (== 'E') grid
+    p1 = bfs' grid end $ Map.keys $ Map.filter (== 'S') grid
+    p2 = bfs' grid end $ Map.keys $ Map.filter (== 'a') grid
 
-bfs' :: Grid -> [Point] -> Int
-bfs' grid starts = bfs grid (Set.fromList starts) (map (0,) starts)
+bfs' :: Grid -> Point -> [Point] -> Int
+bfs' grid end starts = bfs grid end (Set.fromList starts) (map (0,) starts)
 
-bfs :: Grid -> Set.Set Point -> [(Int, Point)] -> Int
-bfs _ _ [] = maxBound -- We ran out of places to visit
-bfs grid visited ((distance, pos) : toVisit)
-  | grid ! pos == 'E' = distance
+bfs :: Grid -> Point -> Set.Set Point -> [(Int, Point)] -> Int
+bfs _ _ _ [] = maxBound -- We ran out of places to visit
+bfs grid end visited ((distance, pos) : toVisit)
+  | pos == end = distance
   | otherwise = do
       let newPoints = filter traversable $ neighbors pos
       let newVisited = foldr Set.insert visited newPoints
       let newToVisit = toVisit ++ map (distance + 1,) newPoints
-      bfs grid newVisited newToVisit
+      bfs grid end newVisited newToVisit
   where
+    currentHeight = height grid pos
     traversable point =
-      point `Map.member` grid
-        && height grid point - height grid pos <= 1
+      height grid point - currentHeight <= 1
         && point `Set.notMember` visited
 
 height :: Grid -> Point -> Int
-height grid point = case grid ! point of
-  'S' -> ord 'a'
-  'E' -> ord 'z'
-  c -> ord c
+height grid point = case Map.lookup point grid of
+  Just 'S' -> ord 'a'
+  Just 'E' -> ord 'z'
+  Just c -> ord c
+  Nothing -> maxBound -- Out of bounds
 
 parser :: Parser Grid
 parser = gridToMap <$> many' parseLine
