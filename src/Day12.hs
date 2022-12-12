@@ -16,22 +16,21 @@ run :: ByteString -> (Int, Int)
 run input = (p1, p2)
   where
     grid = runParser parser input
-    end = head . Map.keys $ Map.filter (== 'E') grid
-    p1 = bfs' grid end $ Map.keys $ Map.filter (== 'S') grid
-    p2 = bfs' grid end $ Map.keys $ Map.filter (== 'a') grid
+    p1 = bfs' grid $ Map.keys $ Map.filter (== 'S') grid
+    p2 = bfs' grid $ Map.keys $ Map.filter (== 'a') grid
 
-bfs' :: Grid -> Point -> [Point] -> Int
-bfs' grid goal starts = bfs grid goal (Set.fromList starts) (map (0,) starts)
+bfs' :: Grid -> [Point] -> Int
+bfs' grid starts = bfs grid (Set.fromList starts) (map (0,) starts)
 
-bfs :: Grid -> Point -> Set.Set Point -> [(Int, Point)] -> Int
-bfs _ _ _ [] = maxBound -- We ran out of places to visit
-bfs grid goal visited ((distance, pos) : toVisit)
+bfs :: Grid -> Set.Set Point -> [(Int, Point)] -> Int
+bfs _ _ [] = maxBound -- We ran out of places to visit
+bfs grid visited ((distance, pos) : toVisit)
   | grid ! pos == 'E' = distance
   | otherwise = do
       let newPoints = filter traversable $ neighbors pos
       let newVisited = foldr Set.insert visited newPoints
       let newToVisit = toVisit ++ map (distance + 1,) newPoints
-      bfs grid goal newVisited newToVisit
+      bfs grid newVisited newToVisit
   where
     traversable point =
       point `Map.member` grid
