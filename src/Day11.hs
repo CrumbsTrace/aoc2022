@@ -8,11 +8,11 @@ import Data.Map.Strict qualified as Map
 import Utils
 
 data Monkey = Monkey
-  { items :: [Integer],
-    operation :: Integer -> Integer,
-    inspect :: Map.Map Int Monkey -> Integer -> Map.Map Int Monkey,
+  { items :: [Int],
+    operation :: Int -> Int,
+    inspect :: Map.Map Int Monkey -> Int -> Map.Map Int Monkey,
     inspectionCount :: Int,
-    factor :: Integer
+    factor :: Int
   }
 
 instance Show Monkey where
@@ -22,27 +22,28 @@ run :: ByteString -> (Int, Int)
 run input = (p1, p2)
   where
     monkeys = runParser parser input
-    p1 = monkeyBusiness $ monkeyAround monkeys 0 20 True
-    p2 = monkeyBusiness $ monkeyAround monkeys 0 10_000 False
+    combinedFactor = product (map factor $ Map.elems monkeys)
+    p1 = monkeyBusiness $ monkeyAround monkeys 0 20 True combinedFactor
+    p2 = monkeyBusiness $ monkeyAround monkeys 0 10_000 False combinedFactor
 
 monkeyBusiness :: Map.Map Int Monkey -> Int
 monkeyBusiness monkeys = product $ take 2 $ sortDesc $ map inspectionCount $ Map.elems monkeys
 
-monkeyAround :: Map.Map Int Monkey -> Int -> Int -> Bool -> Map.Map Int Monkey
-monkeyAround monkeys i maxI reduceWorry
+monkeyAround :: Map.Map Int Monkey -> Int -> Int -> Bool -> Int -> Map.Map Int Monkey
+monkeyAround monkeys i maxI reduceWorry factor
   | i == maxI = monkeys
-  | otherwise = monkeyAround monkeys' (i + 1) maxI reduceWorry
+  | otherwise = monkeyAround monkeys' (i + 1) maxI reduceWorry factor
   where
-    monkeys' = foldl (handleMonkey reduceWorry) monkeys [0 .. (length monkeys - 1)]
+    monkeys' = foldl (handleMonkey reduceWorry factor) monkeys [0 .. (length monkeys - 1)]
 
-handleMonkey :: Bool -> Map.Map Int Monkey -> Int -> Map.Map Int Monkey
-handleMonkey reduceWorry monkeys index =
+handleMonkey :: Bool -> Int -> Map.Map Int Monkey -> Int -> Map.Map Int Monkey
+handleMonkey reduceWorry factor monkeys index =
   let monkey = monkeys Map.! index
       monkeyItems = items monkey
-      monkeys' = foldl (\m s -> inspect monkey m $ uncrazy monkeys $ operation monkey s) monkeys monkeyItems
-   in Map.adjust (\m -> m {items = [], inspectionCount = inspectionCount m + length monkeyItems}) index monkeys'
+   in Map.adjust (\m -> m {items = [], inspectionCount = inspectionCount m + length monkeyItems}) index $
+        foldl (\m s -> inspect monkey m $ uncrazy $ operation monkey s) monkeys monkeyItems
   where
-    uncrazy m item = item `mod` product (map factor $ Map.elems m) `div` if reduceWorry then 3 else 1
+    uncrazy item = item `mod` factor `div` if reduceWorry then 3 else 1
 
 parser :: Parser (Map.Map Int Monkey)
 parser = listToMap <$> many' (parseMonkey <* skipSpace)
@@ -62,10 +63,10 @@ parseMonkey = do
         factor = factor
       }
 
-parseItems :: Parser [Integer]
+parseItems :: Parser [Int]
 parseItems = string "Starting items: " *> (decimal `sepBy'` string ", ") <* skipSpace
 
-parseOperation :: Parser (Integer -> Integer)
+parseOperation :: Parser (Int -> Int)
 parseOperation = do
   _ <- string "Operation: new = old "
   operator <- anyChar
@@ -74,13 +75,13 @@ parseOperation = do
   _ <- skipSpace
   pure (createOperation operator variable)
 
-createOperation :: Char -> Either Integer ByteString -> (Integer -> Integer)
+createOperation :: Char -> Either Int ByteString -> (Int -> Int)
 createOperation '*' (Left n) = (* n)
 createOperation '+' (Left n) = (+ n)
 createOperation '*' (Right _) = (^ (2 :: Integer))
 createOperation _ _ = \n -> n + n
 
-parseInspect :: Parser (Integer, Map.Map Int Monkey -> Integer -> Map.Map Int Monkey)
+parseInspect :: Parser (Int, Map.Map Int Monkey -> Int -> Map.Map Int Monkey)
 parseInspect = do
   n <- string "Test: divisible by " *> decimal <* skipSpace
   x <- string "If true: throw to monkey " *> decimal <* skipSpace
@@ -93,5 +94,5 @@ parseInspect = do
           else addItem monkeys i y
     )
 
-addItem :: Map.Map Int Monkey -> Integer -> Int -> Map.Map Int Monkey
-addItem monkeys n index = Map.adjust (\m -> m {items = items m ++ [n]}) index monkeys
+addItem :: Map.Map Int Monkey -> Int -> Int -> Map.Map Int Monkey
+addItem monkeys n index = Map.adjust (\m -> m {items = n : items m}) index monkeys

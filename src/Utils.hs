@@ -39,14 +39,10 @@ inBounds :: Int -> (Int, Int) -> Bool
 inBounds c (b1, b2) = b1 <= c && b2 >= c
 
 listToMap :: [b] -> Map.Map Int b
-listToMap = listToMapHelper Map.empty 0
+listToMap xs = Map.fromList $ zip [0 .. length xs - 1] xs
 
 listToMap1 :: [b] -> Map.Map Int b
-listToMap1 = listToMapHelper Map.empty 1
-
-listToMapHelper :: Map.Map Int b -> Int -> [b] -> Map.Map Int b
-listToMapHelper stacks _ [] = stacks
-listToMapHelper stacks i (x : xs) = listToMapHelper (Map.insert i x stacks) (i + 1) xs
+listToMap1 xs = Map.fromList $ zip [1 .. length xs] xs
 
 gridToMap :: [[a]] -> Map.Map (Int, Int) a
 gridToMap grid =
