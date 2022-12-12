@@ -16,17 +16,16 @@ where
 
 import Data.Attoparsec.ByteString.Char8 as P
 import Data.ByteString qualified as BS
-import Data.List (sortOn, transpose)
+import Data.List (sortOn)
 import Data.Map.Strict qualified as Map
 import Data.Ord (Down (Down))
-import Debug.Trace
 
 readFromFile :: FilePath -> IO BS.ByteString
 readFromFile = BS.readFile
 
 runParser :: Parser a -> BS.ByteString -> a
 runParser p b = case parseOnly p b of
-  Left a -> traceShow a error "rip"
+  Left _ -> error "Failed to parse input"
   Right s -> s
 
 sortDesc :: Ord a => [a] -> [a]
@@ -51,7 +50,7 @@ listToMapHelper stacks i (x : xs) = listToMapHelper (Map.insert i x stacks) (i +
 gridToMap :: [[a]] -> Map.Map (Int, Int) a
 gridToMap grid =
   let coordinates = [(row, col) | row <- [0 .. length grid - 1], col <- [0 .. length (head grid) - 1]]
-   in Map.fromList (zip coordinates $ concat $ transpose grid)
+   in Map.fromList (zip coordinates $ concat grid)
 
 outOfBounds :: (Int, Int) -> (Int, Int) -> Bool
 outOfBounds (x, y) (width, height)

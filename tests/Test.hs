@@ -23,8 +23,9 @@ unitTests =
       testCase "Day 7" $ do runAndConfirm (runHelper "Day_7") (1334506, 7421137),
       testCase "Day 8" $ do runAndConfirm (runHelper "Day_8") (1816, 383520),
       testCase "Day 9" $ do runAndConfirm (runHelper "Day_9") (6367, 2536),
-      testCase "Day 10" $ do runAndConfirm (runHelper "Day_10") (14780, ["####.#....###..#....####..##..####.#....", "#....#....#..#.#.......#.#..#....#.#....", "###..#....#..#.#......#..#......#..#....", "#....#....###..#.....#...#.##..#...#....", "#....#....#....#....#....#..#.#....#....", "####.####.#....####.####..###.####.####."])
+      testCase "Day 10" $ do runAndConfirm (runHelper "Day_10") (14780, ["####.#....###..#....####..##..####.#....", "#....#....#..#.#.......#.#..#....#.#....", "###..#....#..#.#......#..#......#..#....", "#....#....###..#.....#...#.##..#...#....", "#....#....#....#....#....#..#.#....#....", "####.####.#....####.####..###.####.####."]),
       -- testCase "Day 11" $ do runAndConfirm (runHelper "Day_11") (56120, 24389045529)
+      testCase "Day 12" $ do runAndConfirm (runHelper "Day_12") (447, 446)
     ]
 
 runAndConfirm :: Show a => IO String -> a -> Assertion
