@@ -10,6 +10,7 @@ module Utils
     parseLine,
     gridToMap,
     outOfBounds,
+    neighbors,
     add2D,
   )
 where
@@ -57,6 +58,9 @@ outOfBounds (x, y) (width, height)
   | x >= width || x < 0 = True
   | y >= height || y < 0 = True
   | otherwise = False
+
+neighbors :: (Int, Int) -> [(Int, Int)]
+neighbors (px, py) = [(px - 1, py), (px + 1, py), (px, py + 1), (px, py - 1)]
 
 add2D :: (Int, Int) -> (Int, Int) -> (Int, Int)
 add2D (px, py) (dx, dy) = (px + dx, py + dy)

@@ -6,7 +6,7 @@ import Data.Char (ord)
 import Data.Map.Strict ((!))
 import Data.Map.Strict qualified as Map
 import Data.Set qualified as Set
-import Utils (gridToMap, parseLine, runParser)
+import Utils (gridToMap, parseLine, runParser, neighbors)
 
 type Point = (Int, Int)
 
@@ -36,9 +36,6 @@ bfs grid visited ((distance, pos) : toVisit)
       point `Map.member` grid
         && height grid point - height grid pos <= 1
         && point `Set.notMember` visited
-
-neighbors :: Point -> [Point]
-neighbors (px, py) = [(px - 1, py), (px + 1, py), (px, py + 1), (px, py - 1)]
 
 height :: Grid -> Point -> Int
 height grid point = case grid ! point of
