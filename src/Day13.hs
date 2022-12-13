@@ -11,8 +11,8 @@ data Packet = Value Int | List [Packet] deriving (Show, Eq)
 instance Ord Packet where
   compare (Value x) (Value y) = compare x y
   compare (List x) (List y) = compare x y
-  compare (Value x) (List y) = compare (List [Value x]) (List y)
-  compare (List x) (Value y) = compare (List x) (List [Value y])
+  compare x@(Value _) y@(List _) = compare (List [x]) y
+  compare x@(List _) y@(Value _) = compare x (List [y])
 
 run :: ByteString -> (Int, Int)
 run input = (p1, p2)
