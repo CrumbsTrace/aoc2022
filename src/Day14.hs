@@ -18,11 +18,12 @@ run input = (p1, p2)
     p2 = simulateAllSand cave lowestRock False [(500, 0)] 0
 
 simulateAllSand :: Set.Set Point -> Int -> Bool -> [Point] -> Int -> Int
+simulateAllSand _ _ _ [] total = total
 simulateAllSand occupiedSet lowestRock noFloor previousPath total =
   let path = dropSand occupiedSet (head previousPath) lowestRock noFloor (tail previousPath)
       settledPoint = head path
       occupiedSet' = Set.insert settledPoint occupiedSet
-   in if null path || null previousPath then total else simulateAllSand occupiedSet' lowestRock noFloor (tail path) (total + 1)
+   in if null path then total else simulateAllSand occupiedSet' lowestRock noFloor (tail path) (total + 1)
 
 dropSand :: Set.Set Point -> Point -> Int -> Bool -> [Point] -> [Point]
 dropSand occupiedSet p@(x, y) lowestRock noFloor path
