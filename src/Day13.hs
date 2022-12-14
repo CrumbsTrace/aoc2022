@@ -18,13 +18,13 @@ run :: ByteString -> (Int, Int)
 run input = (p1, p2)
   where
     packets = runParser parser input
-    p1 = sum $ findIndices' ((==) <*> sort) packets
+    p1 = sum $ findIndices1 ((==) <*> sort) packets
 
     keys = [List [List [Value 6]], List [List [Value 2]]]
-    p2 = product $ findIndices' (`elem` keys) $ sort $ keys ++ concat packets
+    p2 = product $ findIndices1 (`elem` keys) $ sort $ keys ++ concat packets
 
-findIndices' :: (a -> Bool) -> [a] -> [Int]
-findIndices' f p = map (+ 1) $ findIndices f p
+findIndices1 :: (a -> Bool) -> [a] -> [Int]
+findIndices1 f p = map (+ 1) $ findIndices f p
 
 parser :: Parser [[Packet]]
 parser = many' (count 2 (packet <* skipSpace))
