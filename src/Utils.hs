@@ -12,6 +12,7 @@ module Utils
     outOfBounds,
     neighbors,
     add2D,
+    combinations,
   )
 where
 
@@ -66,3 +67,15 @@ skipLine = skipWhile ('\n' /=) <* char '\n'
 
 parseLine :: Parser [Char]
 parseLine = many' (notChar '\n') <* char '\n'
+
+combinations :: Int -> [a] -> [[a]]
+combinations 0 _ = [[]]
+combinations _ [] = []
+combinations n xs@(y : ys)
+  | n < 0 = []
+  | otherwise = case drop (n - 1) xs of
+      [] -> []
+      [_] -> [xs]
+      _ ->
+        [y : c | c <- combinations (n - 1) ys]
+          ++ combinations n ys
