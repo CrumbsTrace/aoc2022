@@ -77,7 +77,7 @@ filterRoutes route routes =
   let filteredRoutes = filter (not . worse route) routes
    in if any (`worse` route) filteredRoutes then filteredRoutes else route : filteredRoutes
   where
-    worse route1 route2 = dTotal route2 <= dTotal route1 && total route2 <= total route1 && timeRemaining route2 <= timeRemaining route1
+    worse route1 route2 = dTotal route2 <= dTotal route1 && total route2 <= total route1 && timeRemaining route2 < timeRemaining route1
 
 create :: RouteOption -> Map.Map ByteString Valve -> (DistanceMap, [RouteOption]) -> ByteString -> (DistanceMap, [RouteOption])
 create route valves (distanceMap, routeOptions) goal = do
