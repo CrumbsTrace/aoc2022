@@ -1,15 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# OPTIONS_GHC -Wno-unused-imports #-}
-{-# OPTIONS_GHC -Wno-unused-matches #-}
 
 module Day16 (run) where
 
 import Control.Applicative
 import Data.Attoparsec.ByteString.Char8 as P (Parser, decimal, many', sepBy', skipSpace, string, take)
 import Data.ByteString (ByteString)
+import Data.List (tails)
 import Data.Map.Strict qualified as Map
-import Data.Maybe
+import Data.Maybe (fromMaybe, isNothing)
 import Data.Set qualified as Set
 import Utils (runParser)
 
@@ -22,6 +21,10 @@ data RouteOption = RouteOption
   }
   deriving (Eq, Show)
 
+type ValveMap = Map.Map ByteString Valve
+
+type DistanceMap = Map.Map (ByteString, ByteString) Int
+
 data Valve = Valve
   { name :: ByteString,
     flowRate :: Int,
@@ -29,40 +32,65 @@ data Valve = Valve
   }
   deriving (Show, Eq, Ord)
 
-run input = p1
+run :: ByteString -> (Int, Int)
+run input = (p1, p2)
   where
     valves = runParser parser input
-    valvesWithFlow = map name $ filter (\v -> flowRate v > 0) $ Map.elems valves
-    startingRoute = RouteOption {valveName = "AA", dTotal = 0, total = 0, timeRemaining = 30, opened = Set.empty}
-    routesMap = Map.insert "AA" [startingRoute] (Map.fromList $ map (,[]) valvesWithFlow)
-    p1 = findBest valves [startingRoute] routesMap valvesWithFlow
+    valvesWithFlow = Set.fromList $ map name $ filter (\v -> flowRate v > 0) $ Map.elems valves
+    p1 = maximum $ calculateRoutes valves valvesWithFlow 30
+    p2Routes = calculateRoutes valves valvesWithFlow 26
+    p2 =
+      maximum
+        [ v1 + v2
+          | (opened1, v1) : rest <- tails (Map.assocs p2Routes),
+            (opened2, v2) <- rest,
+            not (overlap opened1 opened2)
+        ]
 
-findBest :: Map.Map ByteString Valve -> [RouteOption] -> Map.Map ByteString [RouteOption] -> [ByteString] -> Int
-findBest valves [] routeOptions _ = maximum $ map (maximum . map (\r -> total r + timeRemaining r * dTotal r)) $ Map.elems routeOptions
-findBest valves (route@RouteOption {..} : xs) routeOptions valvesWithFlow
-  | valveName /= "AA" && route `notElem` (routeOptions Map.! valveName) = findBest valves xs routeOptions valvesWithFlow
+overlap :: Set.Set ByteString -> Set.Set ByteString -> Bool
+overlap set1 set2 = any (`Set.member` set2) set1
+
+calculateRoutes :: ValveMap -> Set.Set ByteString -> Int -> Map.Map (Set.Set ByteString) Int
+calculateRoutes valves valvesWithFlow timeLimit =
+  let startingRoute = RouteOption {valveName = "AA", dTotal = 0, total = 0, timeRemaining = timeLimit, opened = Set.empty}
+      routesMap = Map.insert "AA" [startingRoute] (Map.fromList $ map (,[]) $ Set.toList valvesWithFlow)
+      best = findBest valves [startingRoute] routesMap valvesWithFlow Map.empty
+   in Map.fromListWith max $ map (\r -> (opened r, totalPressure r)) best
+  where
+    totalPressure r = total r + timeRemaining r * dTotal r
+
+findBest :: ValveMap -> [RouteOption] -> Map.Map ByteString [RouteOption] -> Set.Set ByteString -> DistanceMap -> [RouteOption]
+findBest valves [] routeOptions _ _ = concat $ Map.elems routeOptions
+findBest valves (route@RouteOption {..} : xs) routeOptions valvesWithFlow distanceMap
+  | valveName /= "AA" && route `notElem` (routeOptions Map.! valveName) = findBest valves xs routeOptions valvesWithFlow distanceMap
   | otherwise = do
-      let valveOptions = mapMaybe (create route valves) $ filter (`Set.notMember` opened) valvesWithFlow
+      let toVisit = Set.difference valvesWithFlow opened
+      let (distanceMap', valveOptions) = foldl (create route valves) (distanceMap, []) toVisit
       let newRouteOptions = foldl updateRoutes routeOptions valveOptions
-      findBest valves (xs ++ valveOptions) newRouteOptions valvesWithFlow
+      findBest valves (xs ++ valveOptions) newRouteOptions valvesWithFlow distanceMap'
 
 updateRoutes :: Map.Map ByteString [RouteOption] -> RouteOption -> Map.Map ByteString [RouteOption]
 updateRoutes routes route = Map.adjust (filterRoutes route) (valveName route) routes
 
 filterRoutes :: RouteOption -> [RouteOption] -> [RouteOption]
 filterRoutes route routes =
-  let filteredRoutes = filter (not . worse) routes
-   in route : filteredRoutes
+  let filteredRoutes = filter (not . worse route) routes
+   in if any (`worse` route) filteredRoutes then filteredRoutes else route : filteredRoutes
   where
-    worse thisRoute = dTotal thisRoute <= dTotal route && total thisRoute <= total route && timeRemaining thisRoute <= timeRemaining route
+    worse route1 route2 = total route2 <= total route1 && timeRemaining route2 < timeRemaining route1
 
-create :: RouteOption -> Map.Map ByteString Valve -> ByteString -> Maybe RouteOption
-create route valves goal = do
-  let distance = 1 + bfs valves goal Set.empty [(0, valveName route)]
+create :: RouteOption -> Map.Map ByteString Valve -> (DistanceMap, [RouteOption]) -> ByteString -> (DistanceMap, [RouteOption])
+create route valves (distanceMap, routeOptions) goal = do
+  let maybeDistance = Map.lookup (valveName route, goal) distanceMap
+  let distance = fromMaybe (1 + bfs valves goal Set.empty [(0, valveName route)]) maybeDistance
+  let distanceMap' =
+        if isNothing maybeDistance
+          then Map.insert (goal, valveName route) distance $ Map.insert (valveName route, goal) distance distanceMap
+          else distanceMap
   if timeRemaining route - distance <= 0
-    then Nothing
+    then (distanceMap', routeOptions)
     else
-      Just
+      ( distanceMap',
         RouteOption
           { valveName = goal,
             opened = Set.insert goal $ opened route,
@@ -70,9 +98,11 @@ create route valves goal = do
             dTotal = dTotal route + flowRate (valves Map.! goal),
             timeRemaining = timeRemaining route - distance
           }
+          : routeOptions
+      )
 
 -- | Used to find the fastest path to a different valve to open
-bfs :: Map.Map ByteString Valve -> ByteString -> Set.Set ByteString -> [(Int, ByteString)] -> Int
+bfs :: ValveMap -> ByteString -> Set.Set ByteString -> [(Int, ByteString)] -> Int
 bfs _ _ _ [] = error "Destination could not be reached"
 bfs valves end visited ((distance, valveName) : toVisit)
   | valveName == end = distance
