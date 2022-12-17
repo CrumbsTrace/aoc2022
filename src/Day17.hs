@@ -45,7 +45,7 @@ dropRocks i maxI movements tower slices
   where
     matchingSlice = case M.lookup slice slices of
       Nothing -> (0, 0)
-      Just (i2, h2) -> if h2 == height tower then (0, 0) else (i2, h2)
+      Just (i2, h2) -> if h2 == height tower || i `mod` 5 /= i2 `mod` 5 then (0, 0) else (i2, h2)
 
     s@(slice, values) = (copySlice tower, (i, height tower))
     newSlices = M.insert slice values slices
