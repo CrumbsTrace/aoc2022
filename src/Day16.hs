@@ -60,7 +60,7 @@ calculateRoutes valves valvesWithFlow timeLimit =
     totalPressure r = total r + timeRemaining r * dTotal r
 
 findBest :: ValveMap -> [RouteOption] -> Map.Map ByteString [RouteOption] -> Set.Set ByteString -> DistanceMap -> [RouteOption]
-findBest valves [] routeOptions _ _ = concat $ Map.elems routeOptions
+findBest _ [] routeOptions _ _ = concat $ Map.elems routeOptions
 findBest valves (route@RouteOption {..} : xs) routeOptions valvesWithFlow distanceMap
   | valveName /= "AA" && route `notElem` (routeOptions Map.! valveName) = findBest valves xs routeOptions valvesWithFlow distanceMap
   | otherwise = do
@@ -77,7 +77,7 @@ filterRoutes route routes =
   let filteredRoutes = filter (not . worse route) routes
    in if any (`worse` route) filteredRoutes then filteredRoutes else route : filteredRoutes
   where
-    worse route1 route2 = total route2 <= total route1 && timeRemaining route2 < timeRemaining route1
+    worse route1 route2 = dTotal route2 <= dTotal route1 && total route2 <= total route1 && timeRemaining route2 <= timeRemaining route1
 
 create :: RouteOption -> Map.Map ByteString Valve -> (DistanceMap, [RouteOption]) -> ByteString -> (DistanceMap, [RouteOption])
 create route valves (distanceMap, routeOptions) goal = do
