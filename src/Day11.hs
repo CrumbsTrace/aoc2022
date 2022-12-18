@@ -4,6 +4,7 @@ module Day11 (run) where
 
 import Data.Attoparsec.ByteString.Char8 as P (Parser, anyChar, decimal, eitherP, many', sepBy', skipSpace, space, string)
 import Data.ByteString (ByteString)
+import Data.List
 import Data.Map.Strict qualified as Map
 import Utils (runParser, skipLine, sortDesc)
 
@@ -11,7 +12,7 @@ data Monkey = Monkey
   { items :: [Int],
     operation :: Int -> Int,
     inspect :: Map.Map Int Monkey -> Int -> Map.Map Int Monkey,
-    inspectionCount :: Int,
+    inspectCount :: Int,
     factor :: Int
   }
 
@@ -22,28 +23,31 @@ run :: ByteString -> (Int, Int)
 run input = (p1, p2)
   where
     monkeys = runParser parser input
-    combinedFactor = product (map factor $ Map.elems monkeys)
-    p1 = monkeyBusiness $ monkeyAround monkeys 0 20 True combinedFactor
-    p2 = monkeyBusiness $ monkeyAround monkeys 0 10_000 False combinedFactor
+    p1 = monkeyAround monkeys 20 True
+    p2 = monkeyAround monkeys 10_000 False
 
 monkeyBusiness :: Map.Map Int Monkey -> Int
-monkeyBusiness monkeys = product $ take 2 $ sortDesc $ map inspectionCount $ Map.elems monkeys
+monkeyBusiness monkeys = product $ take 2 $ sortDesc $ map inspectCount $ Map.elems monkeys
 
-monkeyAround :: Map.Map Int Monkey -> Int -> Int -> Bool -> Int -> Map.Map Int Monkey
-monkeyAround monkeys i maxI reduceWorry factor
-  | i == maxI = monkeys
-  | otherwise = monkeyAround monkeys' (i + 1) maxI reduceWorry factor
+monkeyAround :: Map.Map Int Monkey -> Int -> Bool -> Int
+monkeyAround monkeys maxI reduceWorry = go monkeys 0
   where
-    monkeys' = foldl (handleMonkey reduceWorry factor) monkeys [0 .. (length monkeys - 1)]
+    combinedFactor = product (map factor $ Map.elems monkeys)
+    monkeyCount = length monkeys - 1
+    go m i
+      | i == maxI = monkeyBusiness m
+      | otherwise = go m' (i + 1)
+      where
+        m' = foldl' (handleMonkey reduceWorry combinedFactor) m [0 .. monkeyCount]
 
 handleMonkey :: Bool -> Int -> Map.Map Int Monkey -> Int -> Map.Map Int Monkey
 handleMonkey reduceWorry factor monkeys index =
   let monkey = monkeys Map.! index
       monkeyItems = items monkey
-   in Map.adjust (\m -> m {items = [], inspectionCount = inspectionCount m + length monkeyItems}) index $
-        foldl (\m s -> inspect monkey m $ uncrazy $ operation monkey s) monkeys monkeyItems
-  where
-    uncrazy item = item `mod` factor `div` if reduceWorry then 3 else 1
+      unWorry item = item `mod` factor `div` if reduceWorry then 3 else 1
+      clearMonkeyHands = Map.adjust (\m -> m {items = [], inspectCount = inspectCount m + length monkeyItems})
+      doInspections = foldl' (\m s -> inspect monkey m $ unWorry $ operation monkey s) monkeys
+   in clearMonkeyHands index $ doInspections monkeyItems
 
 parser :: Parser (Map.Map Int Monkey)
 parser = listToMap <$> many' (parseMonkey <* skipSpace)
@@ -61,7 +65,7 @@ parseMonkey = do
       { items = items,
         operation = op,
         inspect = inspect,
-        inspectionCount = 0,
+        inspectCount = 0,
         factor = factor
       }
 
