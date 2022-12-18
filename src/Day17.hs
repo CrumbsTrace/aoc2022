@@ -8,25 +8,25 @@ import Data.Map.Strict qualified as M
 import Data.Set qualified as S
 import Utils (parseLine, runParser)
 
-type Point = (Integer, Integer)
+type Point = (Int, Int)
 
-type Slice = (S.Set Point, (Integer, Integer))
+type Slice = (S.Set Point, (Int, Int))
 
 type Rock = [Point]
 
 data Tower = Tower
   { towerBlocks :: S.Set Point,
-    height :: Integer
+    height :: Int
   }
 
-rocks :: Integer -> Rock
+rocks :: Int -> Rock
 rocks 0 = [(0, 0), (1, 0), (2, 0), (3, 0)]
 rocks 1 = [(1, 0), (0, 1), (1, 1), (2, 1), (1, 2)]
 rocks 2 = [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]
 rocks 3 = [(0, 0), (0, 1), (0, 2), (0, 3)]
 rocks _ = [(0, 0), (1, 0), (0, 1), (1, 1)]
 
-run :: ByteString -> (Integer, Integer)
+run :: ByteString -> (Int, Int)
 run input = (p1, p2)
   where
     movementPattern = runParser parseLine input
@@ -34,10 +34,10 @@ run input = (p1, p2)
     p1 = solve 2022 movements
     p2 = solve 1000000000000 movements
 
-solve :: Integer -> [Char] -> Integer
+solve :: Int -> [Char] -> Int
 solve n ms = dropRocks 0 n ms (Tower S.empty 0) M.empty
 
-dropRocks :: Integer -> Integer -> [Char] -> Tower -> M.Map (S.Set Point) (Integer, Integer) -> Integer
+dropRocks :: Int -> Int -> [Char] -> Tower -> M.Map (S.Set Point) (Int, Int) -> Int
 dropRocks i maxI movements tower slices
   | i == maxI = height tower
   | i >= 20 && matchingSlice /= (0, 0) = completeTower maxI matchingSlice s movements
@@ -52,7 +52,7 @@ dropRocks i maxI movements tower slices
     rock = map (\(x, y) -> (x + 2, y + height tower + 4)) $ rocks (i `mod` 5)
     (movements', newTower) = placeRock rock movements tower
 
-completeTower :: Integer -> (Integer, Integer) -> Slice -> [Char] -> Integer
+completeTower :: Int -> (Int, Int) -> Slice -> [Char] -> Int
 completeTower maxI (i2, h2) (set, (i, h)) ms = dropRocks newI maxI ms newTower M.empty
   where
     dI = (maxI - i) `div` (i - i2)
