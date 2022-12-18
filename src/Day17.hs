@@ -40,15 +40,15 @@ solve n ms = dropRocks 0 n ms (Tower S.empty 0) M.empty
 dropRocks :: Int -> Int -> [Char] -> Tower -> M.Map (S.Set Point) (Int, Int) -> Int
 dropRocks i maxI movements tower slices
   | i == maxI = height tower
-  | i >= 20 && matchingSlice /= (0, 0) = completeTower maxI matchingSlice s movements
+  | i `mod` 200 == 0 && matchingSlice /= (0, 0) = completeTower maxI matchingSlice s movements
   | otherwise = dropRocks (i + 1) maxI movements' newTower newSlices
   where
     matchingSlice = case M.lookup slice slices of
       Nothing -> (0, 0)
-      Just (i2, h2) -> if h2 == height tower || i `mod` 5 /= i2 `mod` 5 then (0, 0) else (i2, h2)
+      Just (i2, h2) -> if h2 == height tower then (0, 0) else (i2, h2)
 
     s@(slice, values) = (copySlice tower, (i, height tower))
-    newSlices = M.insert slice values slices
+    newSlices = if i `mod` 50 == 0 then M.insert slice values slices else slices
     rock = map (\(x, y) -> (x + 2, y + height tower + 4)) $ rocks (i `mod` 5)
     (movements', newTower) = placeRock rock movements tower
 

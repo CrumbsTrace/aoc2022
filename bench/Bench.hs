@@ -2,9 +2,9 @@ import Criterion.Main
 import Days (runDay)
 
 main = do
-  -- let days = [benchDay ("Day_" <> show i) | i <- [1 .. 18]]
-  let days = [bench "All Days" $ nfIO runAllDays]
-  -- let days = [benchDay "Day_17"]
+  let days = [benchDay ("Day_" <> show i) | i <- [1 .. 18]]
+  -- let days = [bench "All Days" $ nfIO runAllDays]
+  let days = [benchDay "Day_11"]
   defaultMain [bgroup "days" days]
 
 benchDay :: String -> Benchmark

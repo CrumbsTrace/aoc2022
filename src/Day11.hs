@@ -4,13 +4,13 @@ module Day11 (run) where
 
 import Data.Attoparsec.ByteString.Char8 as P (Parser, anyChar, decimal, eitherP, many', sepBy', skipSpace, space, string)
 import Data.ByteString (ByteString)
-import Data.IntMap.Strict qualified as Map
-import Utils ( runParser, sortDesc, skipLine )
+import Data.Map.Strict qualified as Map
+import Utils (runParser, skipLine, sortDesc)
 
 data Monkey = Monkey
   { items :: [Int],
     operation :: Int -> Int,
-    inspect :: Map.IntMap Monkey -> Int -> Map.IntMap Monkey,
+    inspect :: Map.Map Int Monkey -> Int -> Map.Map Int Monkey,
     inspectionCount :: Int,
     factor :: Int
   }
@@ -26,17 +26,17 @@ run input = (p1, p2)
     p1 = monkeyBusiness $ monkeyAround monkeys 0 20 True combinedFactor
     p2 = monkeyBusiness $ monkeyAround monkeys 0 10_000 False combinedFactor
 
-monkeyBusiness :: Map.IntMap Monkey -> Int
+monkeyBusiness :: Map.Map Int Monkey -> Int
 monkeyBusiness monkeys = product $ take 2 $ sortDesc $ map inspectionCount $ Map.elems monkeys
 
-monkeyAround :: Map.IntMap Monkey -> Int -> Int -> Bool -> Int -> Map.IntMap Monkey
+monkeyAround :: Map.Map Int Monkey -> Int -> Int -> Bool -> Int -> Map.Map Int Monkey
 monkeyAround monkeys i maxI reduceWorry factor
   | i == maxI = monkeys
   | otherwise = monkeyAround monkeys' (i + 1) maxI reduceWorry factor
   where
     monkeys' = foldl (handleMonkey reduceWorry factor) monkeys [0 .. (length monkeys - 1)]
 
-handleMonkey :: Bool -> Int -> Map.IntMap Monkey -> Int -> Map.IntMap Monkey
+handleMonkey :: Bool -> Int -> Map.Map Int Monkey -> Int -> Map.Map Int Monkey
 handleMonkey reduceWorry factor monkeys index =
   let monkey = monkeys Map.! index
       monkeyItems = items monkey
@@ -45,9 +45,9 @@ handleMonkey reduceWorry factor monkeys index =
   where
     uncrazy item = item `mod` factor `div` if reduceWorry then 3 else 1
 
-parser :: Parser (Map.IntMap Monkey)
+parser :: Parser (Map.Map Int Monkey)
 parser = listToMap <$> many' (parseMonkey <* skipSpace)
-  where 
+  where
     listToMap xs = Map.fromList $ zip [0 .. length xs - 1] xs
 
 parseMonkey :: Parser Monkey
@@ -83,7 +83,7 @@ createOperation '+' (Left n) = (+ n)
 createOperation '*' (Right _) = (^ (2 :: Integer))
 createOperation _ _ = \n -> n + n
 
-parseInspect :: Parser (Int, Map.IntMap Monkey -> Int -> Map.IntMap Monkey)
+parseInspect :: Parser (Int, Map.Map Int Monkey -> Int -> Map.Map Int Monkey)
 parseInspect = do
   n <- string "Test: divisible by " *> decimal <* skipSpace
   x <- string "If true: throw to monkey " *> decimal <* skipSpace
@@ -96,5 +96,5 @@ parseInspect = do
           else addItem monkeys i y
     )
 
-addItem :: Map.IntMap Monkey -> Int -> Int -> Map.IntMap Monkey
+addItem :: Map.Map Int Monkey -> Int -> Int -> Map.Map Int Monkey
 addItem monkeys n index = Map.adjust (\m -> m {items = n : items m}) index monkeys
