@@ -85,7 +85,7 @@ createOperation :: Char -> Either Int ByteString -> (Int -> Int)
 createOperation '*' (Left n) = (* n)
 createOperation '+' (Left n) = (+ n)
 createOperation '*' (Right _) = (^ (2 :: Integer))
-createOperation _ _ = \n -> n + n
+createOperation _ _ = error "Unspecified operation"
 
 parseInspect :: Parser (Int, Map.Map Int Monkey -> Int -> Map.Map Int Monkey)
 parseInspect = do
