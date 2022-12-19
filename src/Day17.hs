@@ -59,6 +59,7 @@ completeTower maxI (i2, h2) (set, (i, h)) ms = dropRocks newI maxI ms newTower M
     newI = i + (i - i2) * dI
 
 placeRock :: Rock -> [Char] -> Tower -> ([Char], Tower)
+placeRock _ [] _ = error "This should not occur"
 placeRock rock (m : ms) tower
   | success = placeRock movedRock ms tower
   | otherwise = (ms, Tower newBlocks newHeight)
