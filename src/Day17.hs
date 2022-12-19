@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
-{-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
-
 module Day17 (run) where
 
 import Data.ByteString (ByteString)

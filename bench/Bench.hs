@@ -2,9 +2,9 @@ import Criterion.Main
 import Days (runDay)
 
 main = do
-  let days = [benchDay ("Day_" <> show i) | i <- [1 .. 18]]
-  -- let days = [bench "All Days" $ nfIO runAllDays]
-  let days = [benchDay "Day_11"]
+  -- let days = [benchDay ("Day_" <> show i) | i <- [1 .. 18]]
+  let days = [bench "All Days" $ nfIO runAllDays]
+  -- let days = [benchDay "Day_19"]
   defaultMain [bgroup "days" days]
 
 benchDay :: String -> Benchmark
@@ -33,6 +33,7 @@ runAllDays = do
   day16 <- run "Day_16"
   day17 <- run "Day_17"
   day18 <- run "Day_18"
+  day19 <- run "Day_19"
   pure
     ( day1
         ++ day2
@@ -51,6 +52,7 @@ runAllDays = do
         ++ day16
         ++ day17
         ++ day18
+        ++ day19
     )
 
 constructFileName :: String -> FilePath

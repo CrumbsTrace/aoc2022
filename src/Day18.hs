@@ -17,20 +17,16 @@ countExposed :: S.Set Point -> [Point] -> Int
 countExposed grid points = go points [] 0
   where
     go [] _ total = total
-    go (p : ps) regions total
-      | open = go ps regions' (total + 1)
-      | otherwise = go ps regions' total
+    go (p : ps) regions total = go ps regions' newTotal
       where
-        region = filter (\(_, area) -> S.member p area) regions
+        region = filter (S.member p . snd) regions
         ((open, _), regions') =
           if null region
             then ((,) <*> (: regions)) $ floodFill bounds grid p
             else (head region, regions)
-    bounds =
-      ( S.findMax $ S.map (\(x, _, _) -> x) grid,
-        S.findMax $ S.map (\(_, y, _) -> y) grid,
-        S.findMax $ S.map (\(_, _, z) -> z) grid
-      )
+        newTotal = if open then total + 1 else total
+    findMaxBy f = S.findMax $ S.map f grid
+    bounds = (findMaxBy (\(x, _, _) -> x), findMaxBy (\(_, y, _) -> y), findMaxBy (\(_, _, z) -> z))
 
 floodFill :: Point -> S.Set Point -> Point -> (Bool, S.Set Point)
 floodFill (w, h, d) grid point = go (False, S.singleton point) point
