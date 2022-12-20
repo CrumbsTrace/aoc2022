@@ -1,10 +1,10 @@
 module Day20 (run) where
 
-import Data.Attoparsec.ByteString.Char8 as P (Parser, decimal, many', signed, skipSpace)
+import Data.Attoparsec.ByteString.Char8 as P (Parser, char, decimal, many', signed)
 import Data.Bifunctor (Bifunctor (second))
 import Data.ByteString (ByteString)
-import Data.List (foldl')
 import Data.Maybe (fromJust)
+import Data.Vector.Unboxed ((!))
 import Data.Vector.Unboxed qualified as V
 import Utils (runParser)
 
@@ -13,29 +13,33 @@ run input = (p1, p2)
   where
     file = runParser parser input
     numbers = (V.indexed . V.fromList) file
-    p1 = getCoordinates $ mix numbers 0
-    inputPart2 = (V.indexed . V.fromList) $ map (* 811589153) file
-    p2 = getCoordinates $ foldl' mix inputPart2 [0 .. 9]
+    p1 = mix numbers 1
+    p2 = mix (V.map (second (* 811589153)) numbers) 10
 
-mix :: V.Vector (Int, Int) -> Int -> V.Vector (Int, Int)
-mix ns _ = foldl' move ns [0 .. V.length ns - 1]
-
-move :: V.Vector (Int, Int) -> Int -> V.Vector (Int, Int)
-move ns expectedIndex
-  | newIdx < idx = insertBetween current (V.splitAt splitIndex ls) rs
-  | otherwise = insertBetween current (V.splitAt splitIndex rs) ls
+mix :: V.Vector (Int, Int) -> Int -> Int
+mix numbers times
+  | times == 0 = coordinates numbers
+  | otherwise = mix (go numbers 0) $ times - 1
   where
-    idx = fromJust $ V.findIndex ((== expectedIndex) . fst) ns
-    current = ns V.! idx
-    newIdx = mod (idx + snd current) (V.length ns - 1)
-    (ls, rs) = second V.tail $ V.splitAt idx ns
-    splitIndex = if newIdx < idx then newIdx else newIdx - idx
+    len = V.length numbers - 1
+    go ns expectedIndex
+      | expectedIndex > len = ns
+      | otherwise = go newV (expectedIndex + 1)
+      where
+        idx = fromJust $ V.findIndex ((== expectedIndex) . fst) ns
+        toMove = ns ! idx
+        newIdx = mod (idx + snd toMove) len
+        (ls, rs) = second V.tail $ V.splitAt idx ns
+        newV =
+          if newIdx < idx
+            then insertBetween toMove (V.splitAt newIdx ls) rs
+            else insertBetween toMove (V.splitAt (newIdx - idx) rs) ls
 
 insertBetween :: V.Unbox a => a -> (V.Vector a, V.Vector a) -> V.Vector a -> V.Vector a
-insertBetween v p rest = V.snoc (fst p) v V.++ snd p V.++ rest
+insertBetween v (left, right) rest = rest V.++ V.snoc left v V.++ right
 
-getCoordinates :: V.Vector (Int, Int) -> Int
-getCoordinates result = sum $ map snd [result V.! idx1, result V.! idx2, result V.! idx3]
+coordinates :: V.Vector (Int, Int) -> Int
+coordinates result = sum $ map snd [result V.! idx1, result V.! idx2, result V.! idx3]
   where
     zeroIdx = fromJust $ V.findIndex ((== 0) . snd) result
     idx1 = (1000 + zeroIdx) `mod` listLength
@@ -44,4 +48,4 @@ getCoordinates result = sum $ map snd [result V.! idx1, result V.! idx2, result 
     listLength = V.length result
 
 parser :: Parser [Int]
-parser = many' $ signed decimal <* skipSpace
+parser = many' $ signed decimal <* char '\n'

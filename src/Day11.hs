@@ -4,7 +4,7 @@ module Day11 (run) where
 
 import Data.Attoparsec.ByteString.Char8 as P (Parser, anyChar, decimal, eitherP, many', sepBy', skipSpace, space, string)
 import Data.ByteString (ByteString)
-import Data.List
+import Data.List (foldl')
 import Data.Map.Strict qualified as Map
 import Utils (runParser, skipLine, sortDesc)
 
