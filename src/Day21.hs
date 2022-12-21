@@ -8,7 +8,6 @@ import Control.Applicative ((<|>))
 import Data.Attoparsec.ByteString.Char8 as P (Parser, anyChar, char, decimal, many', take)
 import Data.ByteString (ByteString)
 import Data.Map qualified as M
-import Debug.Trace
 import Utils (runParser)
 
 data Expression = Value Int | Formula ByteString Char ByteString | Humn [Int -> Int]
@@ -31,28 +30,27 @@ solveP2 monkeys =
   where
     go x@(Value _) = x
     go (Formula left o right)
-      | left == "humn" = Humn [reverseEvaluate left o right $ extractValue $ go $ monkeys M.! right]
-      | right == "humn" = Humn [reverseEvaluate left o right $ extractValue $ go $ monkeys M.! left]
+      | left == "humn" = createHumn right
+      | right == "humn" = createHumn left
       | otherwise =
           let leftResult = go $ monkeys M.! left
               rightResult = go $ monkeys M.! right
            in case (leftResult, rightResult) of
                 (Value x, Value y) -> Value $ evaluate o x y
-                (Humn os, Value y) -> Humn $ reverseEvaluate "humn" o right y : os
-                (Value x, Humn os) -> Humn $ reverseEvaluate left o "humn" x : os
+                (Humn os, Value y) -> Humn $ inverse "humn" o right y : os
+                (Value x, Humn os) -> Humn $ inverse left o "humn" x : os
+      where
+        createHumn bs = Humn [inverse left o right $ getValue bs]
+        getValue bs = extract $ go $ monkeys M.! bs
+        extract (Value x) = x
 
-reverseEvaluate :: ByteString -> Char -> ByteString -> Int -> (Int -> Int)
-reverseEvaluate _ '*' _ val = (`div` val)
-reverseEvaluate _ '+' _ val = (val `subtract`)
-reverseEvaluate "humn" '-' _ val = (+ val)
-reverseEvaluate _ '-' "humn" val = \x -> -1 * x + val
-reverseEvaluate "humn" '/' _ val = (* val)
-reverseEvaluate _ '/' "humn" val = \x -> 1 `div` (x `div` val)
-reverseEvaluate left _ right val = traceShow (left, right, val) error "aaaa"
-
-extractValue :: Expression -> Int
-extractValue (Value x) = x
-extractValue _ = error "Not a value"
+inverse :: ByteString -> Char -> ByteString -> Int -> (Int -> Int)
+inverse _ '*' _ val = (`div` val)
+inverse _ '+' _ val = (val `subtract`)
+inverse "humn" '-' _ val = (+ val)
+inverse _ '-' "humn" val = (val -)
+inverse "humn" '/' _ val = (* val)
+inverse _ '/' "humn" val = (val `div`)
 
 solveP1 :: M.Map ByteString Expression -> Int
 solveP1 monkeys = go $ monkeys M.! "root"

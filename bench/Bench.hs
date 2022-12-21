@@ -3,8 +3,8 @@ import Days (runDay)
 
 main = do
   -- let days = [benchDay ("Day_" <> show i) | i <- [1 .. 20]]
-  -- let days = [bench "All Days" $ nfIO runAllDays]
-  let days = [benchDay "Day_21"]
+  let days = [bench "All Days" $ nfIO runAllDays]
+  -- let days = [benchDay "Day_21"]
   defaultMain [bgroup "days" days]
 
 benchDay :: String -> Benchmark
@@ -35,6 +35,7 @@ runAllDays = do
   day18 <- run "Day_18"
   day19 <- run "Day_19"
   day20 <- run "Day_20"
+  day21 <- run "Day_21"
   pure
     ( day1
         ++ day2
@@ -55,6 +56,7 @@ runAllDays = do
         ++ day18
         ++ day19
         ++ day20
+        ++ day21
     )
 
 constructFileName :: String -> FilePath
