@@ -16,7 +16,7 @@ module Utils
   )
 where
 
-import Data.Attoparsec.ByteString.Char8 as P
+import Data.Attoparsec.ByteString.Char8 as P (Parser, char, many1', notChar, parseOnly, skipWhile)
 import Data.ByteString qualified as BS
 import Data.List (sortOn)
 import Data.Map.Strict qualified as Map
@@ -66,7 +66,7 @@ skipLine :: Parser ()
 skipLine = skipWhile ('\n' /=) <* char '\n'
 
 parseLine :: Parser [Char]
-parseLine = many' (notChar '\n') <* char '\n'
+parseLine = many1' (notChar '\n') <* char '\n'
 
 combinations :: Int -> [a] -> [[a]]
 combinations 0 _ = [[]]
