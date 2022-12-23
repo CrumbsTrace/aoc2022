@@ -47,7 +47,7 @@ listToMap1 xs = Map.fromList $ zip [1 .. length xs] xs
 
 gridToMap :: [[a]] -> Map.Map (Int, Int) a
 gridToMap grid =
-  let coordinates = [(row, col) | row <- [0 .. length grid - 1], col <- [0 .. length (head grid) - 1]]
+  let coordinates = [(row, col) | col <- [0 .. length grid - 1], row <- [0 .. length (head grid) - 1]]
    in Map.fromList (zip coordinates $ concat grid)
 
 outOfBounds :: (Int, Int) -> (Int, Int) -> Bool
