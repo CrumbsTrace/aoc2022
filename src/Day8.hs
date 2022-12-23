@@ -1,18 +1,16 @@
-{-# OPTIONS_GHC -Wno-unused-imports #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 module Day8(run) where
 
 import Utils ( runParser, gridToMap, outOfBounds, add2D )
-import Data.Attoparsec.ByteString.Char8 (Parser, string, decimal, many', char, anyChar, notChar)
+import Data.Attoparsec.ByteString.Char8 (Parser, many', char, notChar)
 import Data.ByteString (ByteString)
 import Data.Char (ord)
-import Data.List (transpose, null)
-import qualified Data.Map.Strict as Map
-import Data.Map.Strict ((!))
+import qualified Data.HashMap.Strict as Map
+import Data.HashMap.Strict ((!))
 
 type Point = (Int, Int) 
 type Bounds = (Int, Int) 
-type Grid = Map.Map Point Int
+type Grid = Map.HashMap Point Int
 
 run :: ByteString -> (Int, Int)
 run input = (p1, p2)

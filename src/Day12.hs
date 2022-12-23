@@ -4,7 +4,7 @@ import Data.Attoparsec.ByteString.Char8 as P (Parser, char, letter_ascii, many')
 import Data.ByteString (ByteString)
 import Data.Char (ord)
 import Data.Maybe (fromJust, isJust)
-import Data.Set qualified as Set
+import Data.HashSet qualified as Set
 import Data.Vector ((!))
 import Data.Vector qualified as V
 import Utils (neighbors, outOfBounds, runParser)
@@ -42,7 +42,7 @@ bfs grid end goUp start = go (Set.singleton start) [(0, start)]
         currentHeight = height grid pos
         traversable point =
           reachable grid point currentHeight goUp
-            && point `Set.notMember` visited
+            && not (Set.member point visited)
 
 reachable :: Grid -> Point -> Int -> Bool -> Bool
 reachable grid point currentHeight goUp

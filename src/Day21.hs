@@ -7,7 +7,7 @@ module Day21 (run) where
 import Control.Applicative ((<|>))
 import Data.Attoparsec.ByteString.Char8 as P (Parser, anyChar, char, decimal, many', take)
 import Data.ByteString (ByteString)
-import Data.Map qualified as M
+import Data.HashMap.Strict qualified as M
 import Utils (runParser)
 
 data Expression = Value Int | Formula ByteString Char ByteString | Humn [Int -> Int]
@@ -19,7 +19,7 @@ run input = (p1, p2)
     p1 = solveP1 monkeys
     p2 = solveP2 monkeys
 
-solveP2 :: M.Map ByteString Expression -> Int
+solveP2 :: M.HashMap ByteString Expression -> Int
 solveP2 monkeys =
   let Formula left _ right = monkeys M.! "root"
       leftResult = go $ monkeys M.! left
@@ -52,7 +52,7 @@ inverse _ '-' "humn" val = (val -)
 inverse "humn" '/' _ val = (* val)
 inverse _ '/' "humn" val = (val `div`)
 
-solveP1 :: M.Map ByteString Expression -> Int
+solveP1 :: M.HashMap ByteString Expression -> Int
 solveP1 monkeys = go $ monkeys M.! "root"
   where
     go (Value x) = x
@@ -67,7 +67,7 @@ evaluate '-' = (-)
 evaluate '/' = div
 evaluate _ = (+)
 
-parser :: Parser (M.Map ByteString Expression)
+parser :: Parser (M.HashMap ByteString Expression)
 parser = M.fromList <$> many' (equationP <* char '\n')
 
 equationP :: Parser (ByteString, Expression)

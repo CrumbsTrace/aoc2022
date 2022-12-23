@@ -3,13 +3,13 @@
 
 module Day16 (run) where
 
-import Control.Applicative
+import Control.Applicative ( Alternative((<|>)) )
 import Data.Attoparsec.ByteString.Char8 as P (Parser, decimal, many', sepBy', skipSpace, string, take)
 import Data.ByteString (ByteString)
 import Data.List (tails)
-import Data.Map.Strict qualified as Map
+import Data.HashMap.Strict qualified as Map
 import Data.Maybe (fromMaybe, isNothing)
-import Data.Set qualified as Set
+import Data.HashSet qualified as Set
 import Utils (runParser)
 
 data RouteOption = RouteOption
@@ -17,13 +17,13 @@ data RouteOption = RouteOption
     dTotal :: Int,
     total :: Int,
     timeRemaining :: Int,
-    opened :: Set.Set ByteString
+    opened :: Set.HashSet ByteString
   }
   deriving (Eq, Show)
 
-type ValveMap = Map.Map ByteString Valve
+type ValveMap = Map.HashMap ByteString Valve
 
-type DistanceMap = Map.Map (ByteString, ByteString) Int
+type DistanceMap = Map.HashMap (ByteString, ByteString) Int
 
 data Valve = Valve
   { name :: ByteString,
@@ -42,15 +42,15 @@ run input = (p1, p2)
     p2 =
       maximum
         [ v1 + v2
-          | (opened1, v1) : rest <- tails (Map.assocs p2Routes),
+          | (opened1, v1) : rest <- tails (Map.toList p2Routes),
             (opened2, v2) <- rest,
             not (overlap opened1 opened2)
         ]
 
-overlap :: Set.Set ByteString -> Set.Set ByteString -> Bool
+overlap :: Set.HashSet ByteString -> Set.HashSet ByteString -> Bool
 overlap set1 set2 = any (`Set.member` set2) set1
 
-calculateRoutes :: ValveMap -> Set.Set ByteString -> Int -> Map.Map (Set.Set ByteString) Int
+calculateRoutes :: ValveMap -> Set.HashSet ByteString -> Int -> Map.HashMap (Set.HashSet ByteString) Int
 calculateRoutes valves valvesWithFlow timeLimit =
   let startingRoute = RouteOption {valveName = "AA", dTotal = 0, total = 0, timeRemaining = timeLimit, opened = Set.empty}
       routesMap = Map.insert "AA" [startingRoute] (Map.fromList $ map (,[]) $ Set.toList valvesWithFlow)
@@ -59,7 +59,7 @@ calculateRoutes valves valvesWithFlow timeLimit =
   where
     totalPressure r = total r + timeRemaining r * dTotal r
 
-findBest :: ValveMap -> [RouteOption] -> Map.Map ByteString [RouteOption] -> Set.Set ByteString -> DistanceMap -> [RouteOption]
+findBest :: ValveMap -> [RouteOption] -> Map.HashMap ByteString [RouteOption] -> Set.HashSet ByteString -> DistanceMap -> [RouteOption]
 findBest _ [] routeOptions _ _ = concat $ Map.elems routeOptions
 findBest valves (route@RouteOption {..} : xs) routeOptions valvesWithFlow distanceMap
   | valveName /= "AA" && route `notElem` (routeOptions Map.! valveName) = findBest valves xs routeOptions valvesWithFlow distanceMap
@@ -69,7 +69,7 @@ findBest valves (route@RouteOption {..} : xs) routeOptions valvesWithFlow distan
       let newRouteOptions = foldl updateRoutes routeOptions valveOptions
       findBest valves (xs ++ valveOptions) newRouteOptions valvesWithFlow distanceMap'
 
-updateRoutes :: Map.Map ByteString [RouteOption] -> RouteOption -> Map.Map ByteString [RouteOption]
+updateRoutes :: Map.HashMap ByteString [RouteOption] -> RouteOption -> Map.HashMap ByteString [RouteOption]
 updateRoutes routes route = Map.adjust (filterRoutes route) (valveName route) routes
 
 filterRoutes :: RouteOption -> [RouteOption] -> [RouteOption]
@@ -81,7 +81,7 @@ filterRoutes route routes =
       where
         timeDifference = timeRemaining route1 - timeRemaining route2
 
-create :: RouteOption -> Map.Map ByteString Valve -> (DistanceMap, [RouteOption]) -> ByteString -> (DistanceMap, [RouteOption])
+create :: RouteOption -> Map.HashMap ByteString Valve -> (DistanceMap, [RouteOption]) -> ByteString -> (DistanceMap, [RouteOption])
 create route valves (distanceMap, routeOptions) goal = do
   let maybeDistance = Map.lookup (valveName route, goal) distanceMap
   let distance = fromMaybe (1 + bfs valves goal Set.empty [(0, valveName route)]) maybeDistance
@@ -104,17 +104,17 @@ create route valves (distanceMap, routeOptions) goal = do
       )
 
 -- | Used to find the fastest path to a different valve to open
-bfs :: ValveMap -> ByteString -> Set.Set ByteString -> [(Int, ByteString)] -> Int
+bfs :: ValveMap -> ByteString -> Set.HashSet ByteString -> [(Int, ByteString)] -> Int
 bfs _ _ _ [] = error "Destination could not be reached"
 bfs valves end visited ((distance, valveName) : toVisit)
   | valveName == end = distance
   | otherwise =
-      let newPoints = filter (`Set.notMember` visited) (tunnels $ valves Map.! valveName)
+      let newPoints = filter (\v -> not (v `Set.member` visited)) (tunnels $ valves Map.! valveName)
           newVisited = foldr Set.insert visited newPoints
           newToVisit = toVisit ++ map (distance + 1,) newPoints
        in bfs valves end newVisited newToVisit
 
-parser :: Parser (Map.Map ByteString Valve)
+parser :: Parser (Map.HashMap ByteString Valve)
 parser = Map.fromList <$> many' (valveP <* skipSpace)
 
 valveP :: Parser (ByteString, Valve)

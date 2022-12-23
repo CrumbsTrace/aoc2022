@@ -2,8 +2,8 @@ module Day9 (run) where
 
 import Data.Attoparsec.ByteString.Char8 (Parser, anyChar, char, decimal, many')
 import Data.ByteString (ByteString)
-import Data.Set qualified as Set
-import Utils
+import Data.HashSet qualified as Set
+import Utils ( runParser )
 
 type Positions = ((Int, Int), [(Int, Int)])
 
@@ -15,7 +15,7 @@ run input = (p1, p2)
     knots = replicate 9 (0, 0)
     p2 = length $ snd $ foldl doMoves (((0, 0), knots), Set.empty) moves
 
-doMoves :: (Positions, Set.Set (Int, Int)) -> (Int, Int) -> (Positions, Set.Set (Int, Int))
+doMoves :: (Positions, Set.HashSet (Int, Int)) -> (Int, Int) -> (Positions, Set.HashSet (Int, Int))
 doMoves results (0, 0) = results
 doMoves (positions, visited) movement = doMoves (newPositions, newVisited) newMovement
   where
