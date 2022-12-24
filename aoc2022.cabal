@@ -52,7 +52,8 @@ library
         containers,
         vector,
         foldl,
-        unordered-containers
+        unordered-containers,
+        pqueue
 
 test-suite test
     type:             exitcode-stdio-1.0
