@@ -3,8 +3,8 @@ import Days (runDay)
 
 main = do
   -- let days = [benchDay ("Day_" <> show i) | i <- [1 .. 20]]
-  let days = [bench "All Days" $ nfIO runAllDays]
-  -- let days = [benchDay "Day_21"]
+  -- let days = [bench "All Days" $ nfIO runAllDays]
+  let days = [benchDay "Day_17"]
   defaultMain [bgroup "days" days]
 
 benchDay :: String -> Benchmark
