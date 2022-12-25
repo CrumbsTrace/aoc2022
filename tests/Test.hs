@@ -37,7 +37,8 @@ unitTests =
       testCase "Day 21" $ do runAndConfirm (runHelper "Day_21") (291425799367130, 3219579395609),
       testCase "Day 22" $ do runAndConfirm (runHelper "Day_22") (27436, 15426),
       -- testCase "Day 23" $ do runAndConfirm (runHelper "Day_23") (3996, 908)
-      testCase "Day 24" $ do runAndConfirm (runHelper "Day_24") (269, 825)
+      testCase "Day 24" $ do runAndConfirm (runHelper "Day_24") (269, 825),
+      testCase "Day 25" $ do runAndConfirm (runHelper "Day_25") "2-==10--=-0101==1201"
     ]
 
 runAndConfirm :: Show a => IO String -> a -> Assertion
