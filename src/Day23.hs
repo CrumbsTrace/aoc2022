@@ -28,7 +28,7 @@ solve elves n options
   | M.null toMove = n
   | otherwise = solve elves' (n - 1) (map (\i -> (i + 1) `mod` 4) options)
   where
-    elves' = M.foldlWithKey' (\acc to from -> S.delete from $ S.insert to acc) elves toMove
+    elves' = M.foldrWithKey' (\to from acc -> S.delete from $ S.insert to acc) elves toMove
     toMove = S.foldl' add M.empty elves
 
     add m p@(x, y)
