@@ -9,6 +9,19 @@ synopsis:        Advent of Code 2022
 build-type:      Simple
 extra-doc-files: CHANGELOG.md
 
+executable profiling
+    hs-source-dirs:   profiling
+    main-is:          Profiling.hs
+    default-language: GHC2021
+    build-depends:
+        base >=4.16.0.0,
+        aoc2022,
+        bytestring
+
+    ghc-options:         -O2 
+                         -Wall 
+                         -threaded 
+                         -rtsopts "-with-rtsopts=-N -p -s"
 library
     exposed-modules:
         Utils
@@ -44,7 +57,7 @@ library
         Day1_2021
 
     default-language: GHC2021
-    ghc-options: -Wall -O2 -optc-O3
+    ghc-options: -Wall -O2 -optc-O3     
     build-depends:
         base >=4.16.0.0,
         bytestring,
@@ -78,3 +91,4 @@ benchmark bench-days
         aoc2022,
         criterion,
         bytestring
+
