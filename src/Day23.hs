@@ -5,10 +5,10 @@ import Data.Attoparsec.ByteString.Char8 (many')
 import Data.Bifunctor (bimap)
 import Data.ByteString (ByteString)
 import Data.HashMap.Strict qualified as M
-import Data.Maybe (fromJust, mapMaybe)
 import Data.HashSet (HashSet)
 import Data.HashSet qualified as S
-import Utils (parseLine, runParser, gridToMap)
+import Data.Maybe (fromJust, mapMaybe)
+import Utils (gridToMap, parseLine, runParser)
 
 type Point = (Int, Int)
 
@@ -16,8 +16,8 @@ run :: ByteString -> (Int, Int)
 run input = (p1, p2)
   where
     elves = M.keysSet $ M.filter (== '#') $ gridToMap $ runParser (many' parseLine) input
-    p1 = solve elves 10 [0..3]
-    p2 = abs (solve elves (-1) [0..3])
+    p1 = solve elves 10 [0 .. 3]
+    p2 = abs (solve elves (-1) [0 .. 3])
 
 solve :: HashSet Point -> Int -> [Int] -> Int
 solve elves 0 _ = (maxX - minX + 1) * (maxY - minY + 1) - S.size elves
@@ -40,7 +40,7 @@ solve elves n options
         moves = mapMaybe moveCheck options
         location = head moves
         moveCheck i = case i of
-          0 -> if all (\(_, y') -> (y' /= y - 1)) adj then Just (x, y - 1) else Nothing
-          1 -> if all (\(_, y') -> (y' /= y + 1)) adj then Just (x, y + 1) else Nothing
-          2 -> if all (\(x', _) -> (x' /= x - 1)) adj then Just (x - 1, y) else Nothing
-          _ -> if all (\(x', _) -> (x' /= x + 1)) adj then Just (x + 1, y) else Nothing
+          0 -> if all (\(_, y') -> y' /= y - 1) adj then Just (x, y - 1) else Nothing
+          1 -> if all (\(_, y') -> y' /= y + 1) adj then Just (x, y + 1) else Nothing
+          2 -> if all (\(x', _) -> x' /= x - 1) adj then Just (x - 1, y) else Nothing
+          _ -> if all (\(x', _) -> x' /= x + 1) adj then Just (x + 1, y) else Nothing

@@ -39,6 +39,7 @@ runAllDays = do
   day22 <- run "Day_22"
   day23 <- run "Day_23"
   day24 <- run "Day_24"
+  day25 <- run "Day_25"
   pure
     ( day1
         ++ day2
